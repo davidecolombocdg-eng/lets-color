@@ -140,7 +140,7 @@
 
           <div id="loadingBox" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
             <div class="w-12 h-12 border-4 border-rose-300 border-t-purple-600 rounded-full animate-spin"></div>
-            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Colorazione artistica in corso...</p>
+            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Colorazione artistica del disegno...</p>
             <p class="text-xs text-slate-500">Pennarelli Ohuhu Honolulu B</p>
           </div>
 
@@ -429,19 +429,18 @@
             const pureBase64 = currentBase64Image.replace(/^data:image\/[a-z]+;base64,/, '');
             const activePalette = OHUHU_PALETTES[selectedMood] || OHUHU_PALETTES.pastello;
             const extra = document.getElementById('customPrompt').value.trim();
-            const extraDetails = extra ? ` Note: ${extra}.` : '';
+            const extraDetails = extra ? ` Dettagli: ${extra}.` : '';
 
-            // FASE 1: Chiediamo a Gemini la descrizione dettagliata per generare l'immagine vera
-            loadingStatusText.textContent = 'Analisi del disegno in corso...';
-            const visionPrompt = `Describe in English concise details for recreating and coloring this exact line art coloring page: cute puppy wizard, pumpkin, cauldron, shelves. Specify vibrant alcohol marker coloring with palette style: ${selectedMood}.${extraDetails}`;
+            loadingStatusText.textContent = 'Elaborazione artistica del disegno originale...';
 
-            const visionResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            // Invio a Gemini con istruzione per ricolorazione diretta dei pixel
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 contents: [{
                   parts: [
-                    { text: visionPrompt },
+                    { text: `Ricolora questa immagine da colorare in bianco e nero applicando campiture piene e vivaci nello stile ${selectedMood}.${extraDetails} Mantieni tutti i contorni neri originali intatti e restituisci l'immagine interamente colorata.` },
                     {
                       inline_data: {
                         mime_type: currentMimeType,
@@ -449,71 +448,35 @@
                       }
                     }
                   ]
-                }]
+                }],
+                generationConfig: {
+                  responseModalities: ["IMAGE", "TEXT"]
+                }
               })
             });
 
-            const visionData = await visionResp.json();
-            const sceneDesc = visionData?.candidates?.[0]?.content?.parts?.[0]?.text || 'cute puppy wizard coloring page';
+            if (!response.ok) {
+              const err = await response.json().catch(() => ({}));
+              throw new Error(err?.error?.message || `Errore HTTP ${response.status}`);
+            }
 
-            // FASE 2: Generazione dell'immagine a colori reale
-            loadingStatusText.textContent = 'Generazione illustrazione a colori...';
-            const promptForImage = encodeURIComponent(`A cute coloring book illustration fully colored with Ohuhu alcohol brush markers, clean solid flat colors, sharp distinct black outlines, ${sceneDesc}`);
-            const seed = Math.floor(Math.random() * 10000);
-            
-            // Usiamo il renderer visuale ad alta risoluzione senza blocchi CORS
-            const generatedImageUrl = `https://image.pollinations.ai/prompt/${promptForImage}?width=768&height=768&nologo=true&seed=${seed}`;
+            const data = await response.json();
+            let generatedBase64 = null;
 
-            // Pre-caricamento immagine per verificare che sia pronta
-            const testImg = new Image();
-            testImg.crossOrigin = "anonymous";
-            await new Promise((resolve, reject) => {
-              testImg.onload = resolve;
-              testImg.onerror = () => resolve(); // Procedi comunque
-              testImg.src = generatedImageUrl;
-            });
-
-            currentColorResult = generatedImageUrl;
-            document.getElementById('sideColoredImg').src = currentColorResult;
-            setActiveView('colored');
-
-            // FASE 3: Mappa guida Ohuhu
-            const guidePrompt = `Assegna a ogni elemento del disegno (cappello, cagnolino, zucche, calderone, sfondo) un colore della palette: ${JSON.stringify(activePalette.map(p => ({ code: p.code, name: p.name })))}. Rispondi solo con un JSON: {"guida":[{"elemento":"Cappello","codice":"V280","colore":"Night Violet","consiglio":"Campitura con punta brush"}]}`;
-            
-            const guideResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: guidePrompt }] }]
-              })
-            });
-
-            const guideData = await guideResp.json();
-            const guideText = guideData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            const jsonMatch = guideText.match(/\{[\s\S]*\}/);
-
-            const guideSection = document.getElementById('guideSection');
-            const guideItems = document.getElementById('guideItems');
-            guideItems.innerHTML = '';
-
-            if (jsonMatch) {
-              const parsed = JSON.parse(jsonMatch[0]);
-              if (parsed.guida) {
-                parsed.guida.forEach(item => {
-                  const row = document.createElement('div');
-                  row.className = 'p-2.5 rounded-xl bg-purple-50/60 border border-purple-100 flex items-start gap-2.5';
-                  row.innerHTML = `
-                    <span class="px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[11px] mt-0.5 flex-shrink-0">${item.codice}</span>
-                    <div>
-                      <span class="font-bold text-slate-800">${item.elemento}:</span>
-                      <span class="text-purple-900">${item.colore}</span>
-                      <p class="text-[11px] text-slate-500 mt-0.5">${item.consiglio}</p>
-                    </div>
-                  `;
-                  guideItems.appendChild(row);
-                });
-                guideSection.classList.remove('hidden');
+            const parts = data?.candidates?.[0]?.content?.parts || [];
+            for (const p of parts) {
+              if (p.inline_data && p.inline_data.data) {
+                generatedBase64 = `data:${p.inline_data.mime_type || 'image/png'};base64,${p.inline_data.data}`;
+                break;
               }
+            }
+
+            if (generatedBase64) {
+              currentColorResult = generatedBase64;
+              document.getElementById('sideColoredImg').src = currentColorResult;
+              setActiveView('colored');
+            } else {
+              throw new Error('Il modello non ha restituito l\'immagine ricolorata.');
             }
 
             renderOhuhuPalette(selectedMood);
