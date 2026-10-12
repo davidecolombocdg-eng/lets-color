@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's Color - Ohuhu Honolulu B</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 10% 20%, #FFF5EC 0%, #FDF9F3 50%, #F4EEFF 100%);
+    }
+    h1, h2, h3, .font-heading {
+      font-family: 'Fredoka', cursive;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 pb-16">
+
+  <!-- Header -->
+  <header class="bg-white/85 backdrop-blur-md border-b border-rose-100 sticky top-0 z-40 px-4 py-3 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-400 via-pink-400 to-amber-300 flex items-center justify-center text-white text-2xl shadow-md">
+          🎨
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-rose-500 via-purple-500 to-amber-500 bg-clip-text text-transparent">Let's Color</h1>
+          <p class="text-xs text-slate-500 font-medium">Guida & Palette Ohuhu Honolulu B</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Pronto all'uso
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Errore / Avviso -->
+  <div id="errorBanner" class="hidden max-w-6xl mx-auto mt-4 px-4">
+    <div class="p-3.5 bg-rose-50 border border-rose-300 rounded-2xl text-rose-800 text-sm flex items-center justify-between">
+      <span id="errorMessage">Errore durante l'elaborazione.</span>
+      <button onclick="document.getElementById('errorBanner').classList.add('hidden')" class="font-bold text-rose-600 hover:text-rose-900 ml-4">✕</button>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Colonna Sinistra -->
+    <div class="lg:col-span-5 space-y-6">
+      
+      <!-- Box Caricamento Immagine -->
+      <div class="bg-white/95 rounded-3xl p-6 border border-pink-100 shadow-xl shadow-rose-100/40">
+        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span>📷</span> 1. Carica Pagina in Bianco e Nero
+        </h2>
+
+        <div id="dropZone" class="border-2 border-dashed border-rose-200 hover:border-rose-400 rounded-2xl p-6 text-center cursor-pointer bg-rose-50/40 transition">
+          <input type="file" id="fileInput" accept="image/*" class="hidden">
+          <div id="uploadPlaceholder" class="space-y-2">
+            <div class="text-4xl">🪄</div>
+            <p class="text-sm font-semibold text-slate-700">Tocca per scattare una foto o scegliere dalla galleria</p>
+            <p class="text-xs text-slate-400">Supporta foto da smartphone, tablet o scansioni</p>
+          </div>
+          <div id="uploadPreviewBox" class="hidden flex items-center gap-4 text-left">
+            <img id="uploadThumb" class="w-16 h-16 object-contain rounded-xl border border-rose-200 bg-white" alt="Caricata">
+            <div class="flex-1 min-w-0">
+              <p id="uploadFileName" class="text-xs font-bold text-slate-700 truncate"></p>
+              <p class="text-xs text-emerald-600 font-medium">✓ Immagine pronta</p>
+              <button type="button" id="btnChangeImage" class="text-xs text-rose-500 hover:underline mt-1 font-semibold">Cambia foto</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scelta Mood / Stile -->
+      <div class="bg-white/95 rounded-3xl p-6 border border-purple-100 shadow-xl shadow-purple-100/30 space-y-4">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <span>🌸</span> 2. Scegli lo Stile di Colore
+        </h2>
+
+        <div class="grid grid-cols-2 gap-3" id="moodGrid">
+          <button data-mood="pastello" class="mood-btn border-2 border-pink-400 bg-pink-50 text-pink-700 rounded-2xl p-3 text-left transition flex flex-col justify-between">
+            <span class="font-bold text-sm">🌸 Pastello Kawaii</span>
+            <span class="text-xs text-pink-600/80 mt-1">Lilla, pesca, celeste cipria, burro</span>
+          </button>
+          <button data-mood="autunno" class="mood-btn border-2 border-slate-200 hover:border-amber-300 rounded-2xl p-3 text-left transition flex flex-col justify-between">
+            <span class="font-bold text-sm">🍂 Autunno Caldo</span>
+            <span class="text-xs text-slate-500 mt-1">Zucca, ocra, cannella e legno</span>
+          </button>
+          <button data-mood="magico" class="mood-btn border-2 border-slate-200 hover:border-indigo-300 rounded-2xl p-3 text-left transition flex flex-col justify-between">
+            <span class="font-bold text-sm">✨ Notte Magica</span>
+            <span class="text-xs text-slate-500 mt-1">Indaco, viola intenso, menta fluo</span>
+          </button>
+          <button data-mood="natura" class="mood-btn border-2 border-slate-200 hover:border-emerald-300 rounded-2xl p-3 text-left transition flex flex-col justify-between">
+            <span class="font-bold text-sm">🌿 Bosco Incantato</span>
+            <span class="text-xs text-slate-500 mt-1">Verde salvia, muschio, panna</span>
+          </button>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold text-slate-600 block mb-1">Dettagli speciali (opzionale):</label>
+          <input type="text" id="customPrompt" placeholder="Es. 'vestito lilla, zucche pastello azzurro e crema'" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-400 bg-slate-50/50">
+        </div>
+
+        <button id="btnGenerate" class="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-rose-400 via-pink-500 to-purple-500 hover:from-rose-500 hover:to-purple-600 text-white font-bold text-base shadow-lg shadow-pink-200 transition transform active:scale-[0.99] flex items-center justify-center gap-2">
+          <span>✨</span> Crea Ispirazione a Colori
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Colonna Destra -->
+    <div class="lg:col-span-7 space-y-6">
+      
+      <!-- Contenitore Visualizzatore Senza Slider -->
+      <div class="bg-white/95 rounded-3xl p-6 border border-pink-100 shadow-xl shadow-rose-100/40">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100 flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">🖼️</span>
+            <h2 class="text-lg font-bold text-slate-800">Anteprima Ispirazione</h2>
+          </div>
+          
+          <!-- Selettore Viste -->
+          <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600">
+            <button id="viewColored" class="px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700">A Colori</button>
+            <button id="viewSideBySide" class="px-3.5 py-1.5 rounded-lg hover:text-slate-900">Fianco a Fianco</button>
+            <button id="viewOriginal" class="px-3.5 py-1.5 rounded-lg hover:text-slate-900">Originale B/N</button>
+          </div>
+        </div>
+
+        <!-- Area Immagini -->
+        <div id="imageDisplayArea" class="mt-4 relative min-h-[380px] bg-rose-50/20 rounded-2xl border border-rose-100/80 flex items-center justify-center overflow-hidden p-3">
+          <div id="emptyPlaceholder" class="text-center text-slate-400 space-y-2">
+            <div class="text-5xl">🖍️</div>
+            <p class="text-sm font-medium">Carica una pagina e premi "Crea Ispirazione"</p>
+          </div>
+
+          <!-- Spinner caricamento -->
+          <div id="loadingBox" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
+            <div class="w-12 h-12 border-4 border-rose-300 border-t-purple-600 rounded-full animate-spin"></div>
+            <p class="text-sm font-bold text-purple-800">L'AI sta colorando la pagina...</p>
+            <p class="text-xs text-slate-500">Preparazione pennarelli Ohuhu Honolulu B</p>
+          </div>
+
+          <!-- Singola A Colori -->
+          <div id="singleViewContainer" class="hidden w-full flex justify-center">
+            <img id="mainResultImg" class="max-h-[540px] w-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white" alt="Risultato">
+          </div>
+
+          <!-- Fianco a Fianco -->
+          <div id="sideBySideContainer" class="hidden w-full grid grid-cols-2 gap-3">
+            <div class="text-center">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Disegno B/N</span>
+              <img id="sideOriginalImg" class="max-h-[460px] w-full object-contain rounded-xl border border-slate-200 bg-white" alt="Originale">
+            </div>
+            <div class="text-center">
+              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider block mb-1">Bozza a Colori</span>
+              <img id="sideColoredImg" class="max-h-[460px] w-full object-contain rounded-xl border border-purple-200 bg-white" alt="Colorato">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pennarelli Ohuhu Honolulu B -->
+      <div class="bg-white/95 rounded-3xl p-6 border border-purple-100 shadow-xl shadow-purple-100/30">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <span>🖊️</span> Pennarelli Ohuhu Honolulu B da Preparare
+          </h2>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 font-bold border border-purple-200">Doppia Punta Brush / Chisel</span>
+        </div>
+
+        <div id="ohuhuSwatches" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <!-- Swatch card -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const OHUHU_PALETTES = {
+      pastello: [
+        { code: 'B040', name: 'Baby Blue', hex: '#A8D4F0', role: 'Cucciolo / Sfumature' },
+        { code: 'V050', name: 'Lilac', hex: '#D2BCEB', role: 'Cappello / Dettagli magici' },
+        { code: 'YR1',  name: 'Peach Light', hex: '#FAD4C0', role: 'Zucche pastello' },
+        { code: 'Y13',  name: 'Pastel Yellow', hex: '#FFF4A3', role: 'Stelline e luce' },
+        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Piantine e calderone' },
+        { code: 'E020', name: 'Milky Cream', hex: '#F7E7D0', role: 'Dettagli e fondo' }
+      ],
+      autunno: [
+        { code: 'YR4',  name: 'Apricot Orange', hex: '#FFB380', role: 'Zucche' },
+        { code: 'YR5',  name: 'Coral Orange', hex: '#E66A38', role: 'Ombre zucche' },
+        { code: 'E310', name: 'Warm Oak', hex: '#A47551', role: 'Legno e scaffale' },
+        { code: 'Y2',   name: 'Sunflower', hex: '#FAD02C', role: 'Fiamme e stelle' },
+        { code: 'V280', name: 'Night Violet', hex: '#634473', role: 'Cappello mago' },
+        { code: 'G5',   name: 'Poison Green', hex: '#77C924', role: 'Pozione' }
+      ],
+      magico: [
+        { code: 'V280', name: 'Night Violet', hex: '#634473', role: 'Abiti e sfondo' },
+        { code: 'PB10', name: 'Navy Blue', hex: '#2A4468', role: 'Ombre profonde' },
+        { code: 'B070', name: 'Tahitian Blue', hex: '#4CB5E6', role: 'Riflessi luce' },
+        { code: 'RP1',  name: 'Neon Pink', hex: '#FF5C9D', role: 'Pozione incantata' },
+        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Bolle e magia' },
+        { code: '0',    name: 'Colorless Blender', hex: '#F0F0F0', role: 'Sfumature soft' }
+      ],
+      natura: [
+        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Foglie' },
+        { code: 'YG060',name: 'Salvia Green', hex: '#8FB37B', role: 'Muschio' },
+        { code: 'E310', name: 'Warm Oak', hex: '#A47551', role: 'Tavoli e libri' },
+        { code: 'E020', name: 'Milky Cream', hex: '#F7E7D0', role: 'Personaggi' },
+        { code: 'Y13',  name: 'Pastel Yellow', hex: '#FFF4A3', role: 'Luci soffuse' },
+        { code: 'B020', name: 'Light Minty Blue', hex: '#C2E8E4', role: 'Acqua e boccette' }
+      ]
+    };
+
+    let currentBase64Image = null;
+    let currentColorResult = null;
+    let selectedMood = 'pastello';
+    let currentMimeType = 'image/jpeg';
+
+    function showError(msg) {
+      const banner = document.getElementById('errorBanner');
+      const errText = document.getElementById('errorMessage');
+      if (!msg) {
+        banner.classList.add('hidden');
+        return;
+      }
+      errText.textContent = msg;
+      banner.classList.remove('hidden');
+    }
+
+    // Selezione Mood
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mood-btn').forEach(b => {
+          b.className = 'mood-btn border-2 border-slate-200 hover:border-pink-300 rounded-2xl p-3 text-left transition flex flex-col justify-between';
+        });
+        btn.className = 'mood-btn border-2 border-pink-400 bg-pink-50 text-pink-700 rounded-2xl p-3 text-left transition flex flex-col justify-between';
+        selectedMood = btn.getAttribute('data-mood');
+        renderOhuhuPalette(selectedMood);
+      });
+    });
+
+    // Upload
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const uploadPreviewBox = document.getElementById('uploadPreviewBox');
+    const uploadThumb = document.getElementById('uploadThumb');
+    const uploadFileName = document.getElementById('uploadFileName');
+
+    dropZone.onclick = () => fileInput.click();
+    document.getElementById('btnChangeImage').onclick = (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    };
+
+    fileInput.onchange = (e) => {
+      if (e.target.files && e.target.files[0]) {
+        processUploadedFile(e.target.files[0]);
+      }
+    };
+
+    function processUploadedFile(file) {
+      currentMimeType = file.type || 'image/jpeg';
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        currentBase64Image = event.target.result;
+        uploadThumb.src = currentBase64Image;
+        uploadFileName.textContent = file.name;
+        uploadPlaceholder.classList.add('hidden');
+        uploadPreviewBox.classList.remove('hidden');
+
+        document.getElementById('sideOriginalImg').src = currentBase64Image;
+        document.getElementById('emptyPlaceholder').classList.add('hidden');
+        document.getElementById('singleViewContainer').classList.remove('hidden');
+        document.getElementById('mainResultImg').src = currentBase64Image;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Toggle viste
+    const btnViewColored = document.getElementById('viewColored');
+    const btnViewSide = document.getElementById('viewSideBySide');
+    const btnViewOrig = document.getElementById('viewOriginal');
+    const singleView = document.getElementById('singleViewContainer');
+    const sideView = document.getElementById('sideBySideContainer');
+    const mainImg = document.getElementById('mainResultImg');
+
+    function setActiveView(mode) {
+      [btnViewColored, btnViewSide, btnViewOrig].forEach(b => {
+        b.className = 'px-3.5 py-1.5 rounded-lg hover:text-slate-900';
+      });
+
+      if (mode === 'colored') {
+        btnViewColored.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold';
+        singleView.classList.remove('hidden');
+        sideView.classList.add('hidden');
+        mainImg.src = currentColorResult || currentBase64Image;
+      } else if (mode === 'side') {
+        btnViewSide.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold';
+        singleView.classList.add('hidden');
+        sideView.classList.remove('hidden');
+      } else if (mode === 'orig') {
+        btnViewOrig.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold';
+        singleView.classList.remove('hidden');
+        sideView.classList.add('hidden');
+        mainImg.src = currentBase64Image;
+      }
+    }
+
+    btnViewColored.onclick = () => setActiveView('colored');
+    btnViewSide.onclick = () => setActiveView('side');
+    btnViewOrig.onclick = () => setActiveView('orig');
+
+    // Chiamata alla Serverless API di Vercel (/api/colorize)
+    document.getElementById('btnGenerate').onclick = async () => {
+      if (!currentBase64Image) {
+        showError('Carica prima una pagina in bianco e nero.');
+        return;
+      }
+
+      showError(null);
+      const loadingBox = document.getElementById('loadingBox');
+      loadingBox.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/api/colorize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageBase64: currentBase64Image,
+            mimeType: currentMimeType,
+            mood: selectedMood,
+            customPrompt: document.getElementById('customPrompt').value.trim()
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || `Errore HTTP ${response.status}`);
+        }
+
+        if (data.coloredImage) {
+          currentColorResult = data.coloredImage;
+          document.getElementById('sideColoredImg').src = currentColorResult;
+          setActiveView('colored');
+        } else {
+          showError('Nessuna immagine generata dal server. Riprova con un altro stile.');
+        }
+
+        renderOhuhuPalette(selectedMood);
+
+      } catch (err) {
+        console.error(err);
+        showError(`Errore durante l'elaborazione: ${err.message}`);
+      } finally {
+        loadingBox.classList.add('hidden');
+      }
+    };
+
+    function renderOhuhuPalette(mood) {
+      const container = document.getElementById('ohuhuSwatches');
+      container.innerHTML = '';
+      const list = OHUHU_PALETTES[mood] || OHUHU_PALETTES.pastello;
+
+      list.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'p-3 rounded-2xl border border-purple-100 bg-white flex items-center gap-3 shadow-sm hover:shadow-md transition';
+        div.innerHTML = `
+          <div class="w-10 h-10 rounded-xl border border-black/10 flex-shrink-0 shadow-inner" style="background-color: ${m.hex}"></div>
+          <div class="min-w-0">
+            <span class="text-xs font-bold text-slate-800 block">${m.code}</span>
+            <span class="text-[11px] font-semibold text-purple-700 block truncate">${m.name}</span>
+            <span class="text-[10px] text-slate-400 block truncate">${m.role}</span>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    renderOhuhuPalette(selectedMood);
+  </script>
+</body>
+</html>
