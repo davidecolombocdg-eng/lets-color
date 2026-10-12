@@ -140,8 +140,8 @@
 
           <div id="loadingBox" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
             <div class="w-12 h-12 border-4 border-rose-300 border-t-purple-600 rounded-full animate-spin"></div>
-            <p class="text-sm font-bold text-purple-800">L'AI sta colorando la pagina...</p>
-            <p class="text-xs text-slate-500">Preparazione pennarelli Ohuhu Honolulu B</p>
+            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Analisi disegno e palette in corso...</p>
+            <p class="text-xs text-slate-500">Pennarelli Ohuhu Honolulu B</p>
           </div>
 
           <div id="singleViewContainer" class="hidden w-full flex justify-center">
@@ -415,6 +415,7 @@
 
           showError(null);
           const loadingBox = document.getElementById('loadingBox');
+          const loadingStatusText = document.getElementById('loadingStatusText');
           loadingBox.classList.remove('hidden');
 
           try {
@@ -428,16 +429,19 @@
             };
 
             const extra = document.getElementById('customPrompt').value.trim();
-            const extraDetails = extra ? ` Dettagli extra: ${extra}.` : '';
-            const promptText = `Questa è una pagina da colorare in bianco e nero (line art). Ricolorala completamente con campiture pulite nello ${moodDescriptions[selectedMood]}.${extraDetails} IMPORTANTE: Mantieni nitidi e inalterati tutti i contorni neri originali del disegno. Applica colori armoniosi, vibranti e ben definiti come se fosse colorata con pennarelli professionali ad alcool.`;
+            const extraDetails = extra ? ` Note: ${extra}.` : '';
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            // FASE 1: Gemini analizza la scena in bianco e nero
+            loadingStatusText.textContent = 'Analisi del disegno in corso...';
+            const visionPrompt = `Analizza questa pagina da colorare in bianco e nero per bambini/ragazzi. Descrivi dettagliatamente i personaggi e la scena in inglese in circa 30 parole per guidare la colorazione con pennarelli, specificando lo stile: ${moodDescriptions[selectedMood]}.${extraDetails}`;
+
+            const visionResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 contents: [{
                   parts: [
-                    { text: promptText },
+                    { text: visionPrompt },
                     {
                       inline_data: {
                         mime_type: currentMimeType,
@@ -449,30 +453,47 @@
               })
             });
 
-            if (!response.ok) {
-              const errData = await response.json().catch(() => ({}));
-              throw new Error(errData?.error?.message || `Errore HTTP ${response.status}`);
+            if (!visionResp.ok) {
+              const errData = await visionResp.json().catch(() => ({}));
+              throw new Error(errData?.error?.message || `Errore analisi disegno: HTTP ${visionResp.status}`);
             }
 
-            const data = await response.json();
-            let coloredImage = null;
+            const visionData = await visionResp.json();
+            const sceneDescription = visionData?.candidates?.[0]?.content?.parts?.[0]?.text || 'cute coloring book page';
 
-            const candidate = data?.candidates?.[0];
-            if (candidate?.content?.parts) {
-              for (const part of candidate.content.parts) {
-                if (part.inline_data && part.inline_data.data) {
-                  coloredImage = `data:${part.inline_data.mime_type || 'image/png'};base64,${part.inline_data.data}`;
-                  break;
+            // FASE 2: Imagen 3 genera l'illustrazione a colori
+            loadingStatusText.textContent = 'Colorazione artistica con Imagen 3...';
+            const imagenPrompt = `A cute, clean children coloring book illustration fully colored with Ohuhu alcohol brush markers, vibrant flat colors with soft shading, crisp original outlines: ${sceneDescription}. Beautiful aesthetic, cozy kawaii feeling.`;
+
+            const imagenResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                instances: [
+                  { prompt: imagenPrompt }
+                ],
+                parameters: {
+                  sampleCount: 1,
+                  aspectRatio: "1:1",
+                  outputMimeType: "image/jpeg"
                 }
-              }
+              })
+            });
+
+            if (!imagenResp.ok) {
+              const errData = await imagenResp.json().catch(() => ({}));
+              throw new Error(errData?.error?.message || `Errore generazione immagine: HTTP ${imagenResp.status}`);
             }
 
-            if (coloredImage) {
-              currentColorResult = coloredImage;
+            const imagenData = await imagenResp.json();
+            const base64Output = imagenData?.predictions?.[0]?.bytesBase64Encoded;
+
+            if (base64Output) {
+              currentColorResult = `data:image/jpeg;base64,${base64Output}`;
               document.getElementById('sideColoredImg').src = currentColorResult;
               setActiveView('colored');
             } else {
-              throw new Error('Nessuna immagine restituita. Riprova con un altro stile.');
+              throw new Error('Nessuna immagine restituita dal generatore visivo.');
             }
 
             renderOhuhuPalette(selectedMood);
@@ -487,7 +508,6 @@
       }
     }
 
-    // Esecuzione immediata e affidabile
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', setupApp);
     } else {
