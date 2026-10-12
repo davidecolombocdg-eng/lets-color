@@ -433,7 +433,7 @@
 
             // FASE 1: Gemini analizza la scena in bianco e nero
             loadingStatusText.textContent = 'Analisi del disegno in corso...';
-            const visionPrompt = `Analizza questa pagina da colorare in bianco e nero per bambini/ragazzi. Descrivi dettagliatamente i personaggi e la scena in inglese in circa 30 parole per guidare la colorazione con pennarelli, specificando lo stile: ${moodDescriptions[selectedMood]}.${extraDetails}`;
+            const visionPrompt = `Describe in English concise details for coloring this line art illustration: cute characters, objects, cozy outlines. Style: ${moodDescriptions[selectedMood]}.${extraDetails}`;
 
             const visionResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
               method: 'POST',
@@ -461,22 +461,18 @@
             const visionData = await visionResp.json();
             const sceneDescription = visionData?.candidates?.[0]?.content?.parts?.[0]?.text || 'cute coloring book page';
 
-            // FASE 2: Imagen 3 genera l'illustrazione a colori
+            // FASE 2: Imagen 3 genera l'illustrazione a colori tramite :generateImages
             loadingStatusText.textContent = 'Colorazione artistica con Imagen 3...';
-            const imagenPrompt = `A cute, clean children coloring book illustration fully colored with Ohuhu alcohol brush markers, vibrant flat colors with soft shading, crisp original outlines: ${sceneDescription}. Beautiful aesthetic, cozy kawaii feeling.`;
+            const imagenPrompt = `A cute children coloring book illustration completely colored with vibrant alcohol brush markers, flat solid shading, crisp clear outlines: ${sceneDescription}.`;
 
-            const imagenResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`, {
+            const imagenResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImages?key=${apiKey}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                instances: [
-                  { prompt: imagenPrompt }
-                ],
-                parameters: {
-                  sampleCount: 1,
-                  aspectRatio: "1:1",
-                  outputMimeType: "image/jpeg"
-                }
+                prompt: imagenPrompt,
+                numberOfImages: 1,
+                aspectRatio: "1:1",
+                outputMimeType: "image/jpeg"
               })
             });
 
@@ -486,7 +482,7 @@
             }
 
             const imagenData = await imagenResp.json();
-            const base64Output = imagenData?.predictions?.[0]?.bytesBase64Encoded;
+            const base64Output = imagenData?.generatedImages?.[0]?.image?.imageBytes;
 
             if (base64Output) {
               currentColorResult = `data:image/jpeg;base64,${base64Output}`;
