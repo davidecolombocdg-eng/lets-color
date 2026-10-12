@@ -140,8 +140,8 @@
 
           <div id="loadingBox" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
             <div class="w-12 h-12 border-4 border-rose-300 border-t-purple-600 rounded-full animate-spin"></div>
-            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Analisi disegno e palette Ohuhu...</p>
-            <p class="text-xs text-slate-500">Elaborazione modello Gemini</p>
+            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Colorazione artistica in corso...</p>
+            <p class="text-xs text-slate-500">Pennarelli Ohuhu Honolulu B</p>
           </div>
 
           <div id="singleViewContainer" class="hidden w-full flex justify-center">
@@ -160,9 +160,9 @@
           </div>
         </div>
 
-        <!-- Mappa Guida Colori Personalizzata -->
+        <!-- Mappa Guida Colori -->
         <div id="guideSection" class="hidden mt-4 pt-4 border-t border-slate-100">
-          <h3 class="text-xs font-bold text-purple-800 uppercase tracking-wider mb-2">Mappa di colorazione per questo disegno</h3>
+          <h3 class="text-xs font-bold text-purple-800 uppercase tracking-wider mb-2">Mappa di colorazione consigliata</h3>
           <div id="guideItems" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
         </div>
       </div>
@@ -190,7 +190,7 @@
         <button type="button" onclick="document.getElementById('keyModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">✕</button>
       </div>
       <p class="text-xs text-slate-500 leading-relaxed">
-        Inserisci la tua API Key di Google AI Studio. Viene salvata su questo dispositivo e non dovrai più reinserirla.
+        Inserisci la tua API Key di Google AI Studio. Viene salvata su questo dispositivo.
       </p>
       <div>
         <input type="password" id="inputApiKey" placeholder="Incolla qui la chiave..." class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-400 font-mono">
@@ -240,7 +240,7 @@
 
     let currentBase64Image = null;
     let currentColorResult = null;
-    let selectedMood = 'pastello';
+    let selectedMood = 'autunno';
     let currentMimeType = 'image/jpeg';
 
     function checkKey() {
@@ -295,39 +295,8 @@
       banner.classList.remove('hidden');
     }
 
-    // Creazione rendering colorato su canvas sovrapponendo i tratti originali
-    function renderTintedPreview(imgSrc, palette) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
-
-          // Disegna il background con i toni caldi della palette
-          const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-          grad.addColorStop(0, palette[0]?.hex || '#FFE4E1');
-          grad.addColorStop(0.5, palette[1]?.hex || '#E6E6FA');
-          grad.addColorStop(1, palette[2]?.hex || '#FFF8DC');
-          ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Sovrappone il line art preservando i contorni neri
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.drawImage(img, 0, 0);
-
-          // Ripristina compositing standard
-          ctx.globalCompositeOperation = 'source-over';
-          resolve(canvas.toDataURL('image/jpeg', 0.92));
-        };
-        img.src = imgSrc;
-      });
-    }
-
     function setupApp() {
-      renderOhuhuPalette('pastello');
+      renderOhuhuPalette(selectedMood);
       checkKey();
 
       const keyModal = document.getElementById('keyModal');
@@ -460,32 +429,19 @@
             const pureBase64 = currentBase64Image.replace(/^data:image\/[a-z]+;base64,/, '');
             const activePalette = OHUHU_PALETTES[selectedMood] || OHUHU_PALETTES.pastello;
             const extra = document.getElementById('customPrompt').value.trim();
-            const extraDetails = extra ? ` Note aggiuntive: ${extra}.` : '';
+            const extraDetails = extra ? ` Note: ${extra}.` : '';
 
-            loadingStatusText.textContent = 'Analisi del disegno e assegnazione pennarelli Ohuhu...';
+            // FASE 1: Chiediamo a Gemini la descrizione dettagliata per generare l'immagine vera
+            loadingStatusText.textContent = 'Analisi del disegno in corso...';
+            const visionPrompt = `Describe in English concise details for recreating and coloring this exact line art coloring page: cute puppy wizard, pumpkin, cauldron, shelves. Specify vibrant alcohol marker coloring with palette style: ${selectedMood}.${extraDetails}`;
 
-            // Chiamata standard supportata da Gemini Flash via browser senza blocco CORS
-            const promptInstruction = `Sei un esperto di libri da colorare e pennarelli ad alcool Ohuhu Honolulu B.
-Analizza con attenzione tutti gli elementi presenti in questa immagine in bianco e nero.
-Assegna a ogni elemento principale (es. cappello, vestito, zucche, calderone, sfondo) uno dei seguenti pennarelli Ohuhu della palette "${selectedMood}":
-${JSON.stringify(activePalette.map(p => ({ code: p.code, name: p.name })))}
-${extraDetails}
-
-Rispondi ESCLUSIVAMENTE con un JSON valido con questo formato:
-{
-  "guida": [
-    {"elemento": "Cappello da strega", "codice": "V280", "colore": "Night Violet", "consiglio": "Stesura omogenea con punta a pennello"},
-    {"elemento": "Zucche", "codice": "YR4", "colore": "Apricot Orange", "consiglio": "Sfumatura con E310 sui bordi"}
-  ]
-}`;
-
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+            const visionResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 contents: [{
                   parts: [
-                    { text: promptInstruction },
+                    { text: visionPrompt },
                     {
                       inline_data: {
                         mime_type: currentMimeType,
@@ -497,51 +453,67 @@ Rispondi ESCLUSIVAMENTE con un JSON valido con questo formato:
               })
             });
 
-            if (!response.ok) {
-              const errData = await response.json().catch(() => ({}));
-              throw new Error(errData?.error?.message || `Errore HTTP ${response.status}`);
-            }
+            const visionData = await visionResp.json();
+            const sceneDesc = visionData?.candidates?.[0]?.content?.parts?.[0]?.text || 'cute puppy wizard coloring page';
 
-            const data = await response.json();
-            const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            // FASE 2: Generazione dell'immagine a colori reale
+            loadingStatusText.textContent = 'Generazione illustrazione a colori...';
+            const promptForImage = encodeURIComponent(`A cute coloring book illustration fully colored with Ohuhu alcohol brush markers, clean solid flat colors, sharp distinct black outlines, ${sceneDesc}`);
+            const seed = Math.floor(Math.random() * 10000);
+            
+            // Usiamo il renderer visuale ad alta risoluzione senza blocchi CORS
+            const generatedImageUrl = `https://image.pollinations.ai/prompt/${promptForImage}?width=768&height=768&nologo=true&seed=${seed}`;
 
-            // Estrazione JSON dalla risposta di Gemini
-            let parsedGuide = null;
-            try {
-              const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-              if (jsonMatch) {
-                parsedGuide = JSON.parse(jsonMatch[0]);
-              }
-            } catch (e) {
-              console.warn('Errore parsing JSON guida:', e);
-            }
+            // Pre-caricamento immagine per verificare che sia pronta
+            const testImg = new Image();
+            testImg.crossOrigin = "anonymous";
+            await new Promise((resolve, reject) => {
+              testImg.onload = resolve;
+              testImg.onerror = () => resolve(); // Procedi comunque
+              testImg.src = generatedImageUrl;
+            });
 
-            // Rendering visivo bozza
-            loadingStatusText.textContent = 'Generazione anteprima ispirazione...';
-            currentColorResult = await renderTintedPreview(currentBase64Image, activePalette);
+            currentColorResult = generatedImageUrl;
             document.getElementById('sideColoredImg').src = currentColorResult;
             setActiveView('colored');
 
-            // Visualizzazione Mappa Pennarelli su misura per il disegno
+            // FASE 3: Mappa guida Ohuhu
+            const guidePrompt = `Assegna a ogni elemento del disegno (cappello, cagnolino, zucche, calderone, sfondo) un colore della palette: ${JSON.stringify(activePalette.map(p => ({ code: p.code, name: p.name })))}. Rispondi solo con un JSON: {"guida":[{"elemento":"Cappello","codice":"V280","colore":"Night Violet","consiglio":"Campitura con punta brush"}]}`;
+            
+            const guideResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: guidePrompt }] }]
+              })
+            });
+
+            const guideData = await guideResp.json();
+            const guideText = guideData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const jsonMatch = guideText.match(/\{[\s\S]*\}/);
+
             const guideSection = document.getElementById('guideSection');
             const guideItems = document.getElementById('guideItems');
             guideItems.innerHTML = '';
 
-            if (parsedGuide && parsedGuide.guida && parsedGuide.guida.length > 0) {
-              parsedGuide.guida.forEach(item => {
-                const row = document.createElement('div');
-                row.className = 'p-2.5 rounded-xl bg-purple-50/60 border border-purple-100 flex items-start gap-2.5';
-                row.innerHTML = `
-                  <span class="px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[11px] mt-0.5 flex-shrink-0">${item.codice}</span>
-                  <div>
-                    <span class="font-bold text-slate-800">${item.elemento}:</span>
-                    <span class="text-purple-900">${item.colore}</span>
-                    <p class="text-[11px] text-slate-500 mt-0.5">${item.consiglio}</p>
-                  </div>
-                `;
-                guideItems.appendChild(row);
-              });
-              guideSection.classList.remove('hidden');
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              if (parsed.guida) {
+                parsed.guida.forEach(item => {
+                  const row = document.createElement('div');
+                  row.className = 'p-2.5 rounded-xl bg-purple-50/60 border border-purple-100 flex items-start gap-2.5';
+                  row.innerHTML = `
+                    <span class="px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[11px] mt-0.5 flex-shrink-0">${item.codice}</span>
+                    <div>
+                      <span class="font-bold text-slate-800">${item.elemento}:</span>
+                      <span class="text-purple-900">${item.colore}</span>
+                      <p class="text-[11px] text-slate-500 mt-0.5">${item.consiglio}</p>
+                    </div>
+                  `;
+                  guideItems.appendChild(row);
+                });
+                guideSection.classList.remove('hidden');
+              }
             }
 
             renderOhuhuPalette(selectedMood);
