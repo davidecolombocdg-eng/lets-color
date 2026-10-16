@@ -2,8 +2,8 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Let's Color - Ohuhu Honolulu B</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Let's Color MASTERPIECE - Motore Artistico Ohuhu Honolulu B</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,578 +11,1113 @@
   <style>
     body {
       font-family: 'Quicksand', sans-serif;
-      background: radial-gradient(circle at 10% 20%, #FFF5EC 0%, #FDF9F3 50%, #F4EEFF 100%);
+      background: radial-gradient(circle at 15% 15%, #1E192B 0%, #13101C 55%, #0B0910 100%);
+      color: #F8FAFC;
+      touch-action: manipulation;
     }
     h1, h2, h3, .font-heading {
       font-family: 'Fredoka', cursive;
     }
+    canvas {
+      cursor: crosshair;
+      touch-action: pinch-zoom;
+    }
+    .marker-active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(244, 114, 182, 0.5);
+      border-color: #F472B6 !important;
+      background-color: rgba(244, 114, 182, 0.18) !important;
+    }
+    .mode-active {
+      background: linear-gradient(135deg, #F59E0B 0%, #EC4899 50%, #8B5CF6 100%) !important;
+      color: white !important;
+      border-color: transparent !important;
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.35);
+    }
   </style>
 </head>
-<body class="min-h-screen text-slate-800 pb-16">
+<body class="min-h-screen pb-16">
 
   <!-- Header -->
-  <header class="bg-white/85 backdrop-blur-md border-b border-rose-100 sticky top-0 z-40 px-4 py-3 shadow-sm">
+  <header class="bg-slate-900/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40 px-4 py-3 shadow-xl">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-400 via-pink-400 to-amber-300 flex items-center justify-center text-white text-2xl shadow-md">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg">
           🎨
         </div>
         <div>
-          <h1 class="text-2xl font-bold bg-gradient-to-r from-rose-500 via-purple-500 to-amber-500 bg-clip-text text-transparent">Let's Color</h1>
-          <p class="text-xs text-slate-500 font-medium">Guida & Palette Ohuhu Honolulu B</p>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-amber-200 via-pink-400 to-purple-400 bg-clip-text text-transparent">Let's Color MASTERPIECE</h1>
+          <p class="text-xs text-slate-400 font-medium">Diffusione Inchiostro ad Alcol, Macro-Sfumature & Gelly Roll Highlights</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button type="button" id="btnOpenKeyModal" class="px-3.5 py-1.5 rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-          🔑 <span id="keyStatusText">Imposta API Key</span>
-        </button>
+        <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-bold flex items-center gap-1.5">
+          ✨ Motore Pittorico Avanzato
+        </span>
       </div>
     </div>
   </header>
 
-  <!-- Banner Errore -->
-  <div id="errorBanner" class="hidden max-w-6xl mx-auto mt-4 px-4">
-    <div class="p-3.5 bg-rose-50 border border-rose-300 rounded-2xl text-rose-800 text-sm flex items-center justify-between">
-      <span id="errorMessage">Errore durante l'elaborazione.</span>
-      <button type="button" onclick="document.getElementById('errorBanner').classList.add('hidden')" class="font-bold text-rose-600 hover:text-rose-900 ml-4 cursor-pointer">✕</button>
-    </div>
-  </div>
-
-  <main class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <main class="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-7">
     
-    <!-- Colonna Sinistra -->
-    <div class="lg:col-span-5 space-y-6">
+    <!-- Colonna Sinistra: Controlli Pittorici -->
+    <div class="lg:col-span-5 space-y-5">
       
-      <!-- Upload Box -->
-      <div class="bg-white/95 rounded-3xl p-6 border border-pink-100 shadow-xl shadow-rose-100/40">
-        <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <!-- 1. Carica Disegno -->
+      <div class="bg-slate-800/90 rounded-3xl p-5 border border-white/10 shadow-xl">
+        <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
           <span>📷</span> 1. Carica Pagina in Bianco e Nero
         </h2>
 
-        <div id="dropZone" class="border-2 border-dashed border-rose-200 hover:border-rose-400 rounded-2xl p-6 text-center cursor-pointer bg-rose-50/40 transition">
+        <div id="dropZone" class="border-2 border-dashed border-amber-400/40 hover:border-pink-400 rounded-2xl p-4 text-center cursor-pointer bg-slate-900/50 transition">
           <input type="file" id="fileInput" accept="image/*" class="hidden">
-          <div id="uploadPlaceholder" class="space-y-2">
-            <div class="text-4xl">🪄</div>
-            <p class="text-sm font-semibold text-slate-700">Tocca per scegliere o scattare la foto</p>
-            <p class="text-xs text-slate-400">Supporta foto da smartphone, tablet o scansioni</p>
+          <div id="uploadPlaceholder" class="space-y-1.5">
+            <div class="text-3xl">✨</div>
+            <p class="text-sm font-semibold text-slate-200">Tocca per scegliere o scattare la foto</p>
+            <p class="text-xs text-slate-400">Fusione morbida ad alcol, texture pelo/legno e luci volumetriche</p>
           </div>
           <div id="uploadPreviewBox" class="hidden flex items-center gap-4 text-left">
-            <img id="uploadThumb" class="w-16 h-16 object-contain rounded-xl border border-rose-200 bg-white" alt="Caricata">
+            <img id="uploadThumb" class="w-14 h-14 object-contain rounded-xl border border-white/20 bg-white" alt="Caricata">
             <div class="flex-1 min-w-0">
-              <p id="uploadFileName" class="text-xs font-bold text-slate-700 truncate"></p>
-              <p class="text-xs text-emerald-600 font-medium">✓ Immagine pronta</p>
-              <button type="button" id="btnChangeImage" class="text-xs text-rose-500 hover:underline mt-1 font-semibold cursor-pointer">Cambia foto</button>
+              <p id="uploadFileName" class="text-xs font-bold text-white truncate"></p>
+              <p class="text-xs text-amber-300 font-medium">✓ Pittura multistrato attiva</p>
+              <button type="button" id="btnChangeImage" class="text-xs text-pink-400 hover:underline mt-0.5 font-semibold cursor-pointer">Cambia disegno</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Scelta Stile -->
-      <div class="bg-white/95 rounded-3xl p-6 border border-purple-100 shadow-xl shadow-purple-100/30 space-y-4">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <span>🌸</span> 2. Scegli lo Stile di Colore
+      <!-- 2. Direzione Artistica & Atmosfera -->
+      <div class="bg-slate-800/90 rounded-3xl p-5 border border-white/10 shadow-xl space-y-4">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <span>🌟</span> 2. Direzione Artistica & Luci
         </h2>
 
-        <div class="grid grid-cols-2 gap-3" id="moodGrid">
-          <button type="button" data-mood="pastello" class="mood-btn border-2 border-pink-400 bg-pink-50 text-pink-700 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
-            <span class="font-bold text-sm">🌸 Pastello Kawaii</span>
-            <span class="text-xs text-pink-600/80 mt-1">Lilla, pesca, celeste cipria, burro</span>
+        <div class="grid grid-cols-2 gap-2.5" id="moodGrid">
+          <button type="button" data-mood="alchimia" class="mood-btn mode-active border border-white/10 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
+            <span class="font-bold text-sm">🎃 Alchimia Calda</span>
+            <span class="text-[11px] opacity-90 mt-0.5">Legno venato caldo, peluche biscotto, zucche ambrate e bagliore verde-oro</span>
           </button>
-          <button type="button" data-mood="autunno" class="mood-btn border-2 border-slate-200 hover:border-amber-300 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
-            <span class="font-bold text-sm">🍂 Autunno Caldo</span>
-            <span class="text-xs text-slate-500 mt-1">Zucca, ocra, cannella e legno</span>
+          <button type="button" data-mood="noir" class="mood-btn bg-slate-900/80 border border-white/10 hover:border-lime-400/50 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
+            <span class="font-bold text-sm text-lime-300">🧪 Noir & Neon Glow</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Sfumature grigio carbone vellutate + luce radioattiva lime fluo</span>
           </button>
-          <button type="button" data-mood="magico" class="mood-btn border-2 border-slate-200 hover:border-indigo-300 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
-            <span class="font-bold text-sm">✨ Notte Magica</span>
-            <span class="text-xs text-slate-500 mt-1">Indaco, viola intenso, menta fluo</span>
+          <button type="button" data-mood="fiaba" class="mood-btn bg-slate-900/80 border border-white/10 hover:border-pink-400/50 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
+            <span class="font-bold text-sm text-pink-300">🌸 Sogno Pastello</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Sfumature zucchero filato, lilla, pesca, crema e luce dorata</span>
           </button>
-          <button type="button" data-mood="natura" class="mood-btn border-2 border-slate-200 hover:border-emerald-300 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
-            <span class="font-bold text-sm">🌿 Bosco Incantato</span>
-            <span class="text-xs text-slate-500 mt-1">Verde salvia, muschio, panna</span>
+          <button type="button" data-mood="notturno" class="mood-btn bg-slate-900/80 border border-white/10 hover:border-cyan-400/50 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer">
+            <span class="font-bold text-sm text-cyan-300">🌙 Bosco Stregato</span>
+            <span class="text-[11px] text-slate-400 mt-0.5">Blu notte, muschio, quercia scura e bagliore bioluminescente</span>
           </button>
         </div>
 
-        <div>
-          <label class="text-xs font-bold text-slate-600 block mb-1">Dettagli speciali (opzionale):</label>
-          <input type="text" id="customPrompt" placeholder="Es. 'vestito lilla, zucche pastello azzurro e crema'" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-400 bg-slate-50/50">
-        </div>
+        <!-- Regolazioni Fini Pittoriche -->
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-white/10 space-y-3">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-bold text-amber-300">💡 Irradiazione Luce Magica (OSL):</span>
+              <span id="glowText" class="text-slate-300 font-mono text-[11px]">85%</span>
+            </div>
+            <input type="range" id="sliderGlow" min="0" max="100" value="85" class="w-full accent-amber-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+          </div>
 
-        <button type="button" id="btnGenerate" class="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-rose-400 via-pink-500 to-purple-500 hover:from-rose-500 hover:to-purple-600 text-white font-bold text-base shadow-lg shadow-pink-200 transition transform active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
-          <span>✨</span> Crea Ispirazione a Colori
-        </button>
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-bold text-pink-300">💧 Morbidezza Blending & Ombre:</span>
+              <span id="depthText" class="text-slate-300 font-mono text-[11px]">90%</span>
+            </div>
+            <input type="range" id="sliderDepth" min="20" max="100" value="90" class="w-full accent-pink-400 cursor-pointer h-1.5 bg-slate-700 rounded-lg">
+          </div>
+
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-white/10">
+            <span class="font-bold text-white flex items-center gap-1.5">✒️ Riflessi Penna Gel Bianca (Gelly Roll):</span>
+            <input type="checkbox" id="chkHighlights" checked class="w-4 h-4 accent-amber-400 rounded cursor-pointer">
+          </div>
+
+          <div class="pt-1 border-t border-white/10 flex items-center justify-between text-xs">
+            <span class="text-slate-300 font-semibold">Azione Tocco sul Disegno:</span>
+            <div class="inline-flex rounded-xl bg-slate-800 p-1 border border-white/10">
+              <button type="button" id="btnModePaint" class="px-2.5 py-1 rounded-lg bg-pink-500 text-white font-bold text-[11px] cursor-pointer">🖊️ Dipingi Volume</button>
+              <button type="button" id="btnModeLight" class="px-2.5 py-1 rounded-lg text-slate-300 font-bold text-[11px] cursor-pointer">✨ Sposta Luce</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Triplette di Sfumatura Ohuhu Honolulu B -->
+      <div class="bg-slate-800/90 rounded-3xl p-5 border border-white/10 shadow-xl">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-base font-bold text-white flex items-center gap-2">
+            <span>🖊️</span> 3. Triplette Sfumatura & Texture
+          </h2>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-400/30">Luce + Base + Ombra</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-3">
+          Ogni materiale fonde <strong>3 pennarelli Ohuhu Honolulu B</strong> con texture specifica (legno, pelo riccio, vetro, metallo, luce). Tocca un materiale e tocca il disegno:
+        </p>
+        <div id="ohuhuSwatches" class="grid grid-cols-2 gap-2 max-h-[320px] overflow-y-auto pr-1"></div>
       </div>
 
     </div>
 
-    <!-- Colonna Destra -->
+    <!-- Colonna Destra: Tela Pittorica e Ricetta -->
     <div class="lg:col-span-7 space-y-6">
       
-      <!-- Visualizzatore -->
-      <div class="bg-white/95 rounded-3xl p-6 border border-pink-100 shadow-xl shadow-rose-100/40">
-        <div class="flex items-center justify-between pb-4 border-b border-slate-100 flex-wrap gap-2">
+      <div class="bg-slate-800/90 rounded-3xl p-6 border border-white/10 shadow-2xl">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 flex-wrap gap-2">
           <div class="flex items-center gap-2">
             <span class="text-xl">🖼️</span>
-            <h2 class="text-lg font-bold text-slate-800">Anteprima Ispirazione</h2>
+            <div>
+              <h2 class="text-lg font-bold text-white leading-tight">Studio d'Arte Ohuhu Honolulu B</h2>
+              <p class="text-[11px] text-amber-300 font-semibold" id="activeMarkerHint">Sfumatura continua multi-livello pronta</p>
+            </div>
           </div>
           
-          <div class="inline-flex p-1 bg-slate-100 rounded-xl text-xs font-semibold text-slate-600">
-            <button type="button" id="viewColored" class="px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold cursor-pointer">A Colori</button>
-            <button type="button" id="viewSideBySide" class="px-3.5 py-1.5 rounded-lg hover:text-slate-900 cursor-pointer">Fianco a Fianco</button>
-            <button type="button" id="viewOriginal" class="px-3.5 py-1.5 rounded-lg hover:text-slate-900 cursor-pointer">Originale B/N</button>
+          <div class="inline-flex p-1 bg-slate-900 rounded-xl text-xs font-semibold text-slate-400 border border-white/10">
+            <button type="button" id="viewColored" class="px-3 py-1.5 rounded-lg bg-slate-700 text-white font-bold cursor-pointer">Opera Finita</button>
+            <button type="button" id="viewSideBySide" class="px-3 py-1.5 rounded-lg hover:text-white cursor-pointer">Fianco a Fianco</button>
+            <button type="button" id="viewOriginal" class="px-3 py-1.5 rounded-lg hover:text-white cursor-pointer">Originale B/N</button>
           </div>
         </div>
 
-        <div id="imageDisplayArea" class="mt-4 relative min-h-[380px] bg-rose-50/20 rounded-2xl border border-rose-100/80 flex items-center justify-center overflow-hidden p-3">
-          <div id="emptyPlaceholder" class="text-center text-slate-400 space-y-2">
-            <div class="text-5xl">🖍️</div>
-            <p class="text-sm font-medium">Carica una pagina e premi "Crea Ispirazione"</p>
+        <!-- Area Tela con Tavolo in Legno Caldo -->
+        <div id="imageDisplayArea" class="mt-4 relative min-h-[460px] rounded-2xl border border-white/10 flex items-center justify-center overflow-hidden p-3 sm:p-5"
+             style="background: linear-gradient(135deg, #6B442A 0%, #4A2C18 50%, #331D0E 100%); box-shadow: inset 0 6px 25px rgba(0,0,0,0.7);">
+          
+          <div id="emptyPlaceholder" class="text-center text-slate-200 space-y-2 p-7 bg-slate-900/85 backdrop-blur-md rounded-2xl border border-white/10 max-w-sm">
+            <div class="text-5xl">🧙‍♂️✨</div>
+            <p class="text-base font-bold text-white">Carica la tua pagina da colorare</p>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Il motore fonderà i volumi senza stacchi rigidi, disegnando venature del legno, pelo soffice, ombre d'occlusione e riflessi di luce radiante.
+            </p>
           </div>
 
-          <div id="loadingBox" class="hidden absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
-            <div class="w-12 h-12 border-4 border-rose-300 border-t-purple-600 rounded-full animate-spin"></div>
-            <p id="loadingStatusText" class="text-sm font-bold text-purple-800">Colorazione artistica del disegno in corso...</p>
-            <p class="text-xs text-slate-500">Applicazione campiture Ohuhu Honolulu B</p>
+          <div id="loadingBox" class="hidden absolute inset-0 bg-slate-900/90 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
+            <div class="w-12 h-12 border-4 border-amber-400/30 border-t-amber-400 rounded-full animate-spin"></div>
+            <p class="text-sm font-bold text-amber-300">Stesura stratificata Ohuhu & diffusione inchiostro...</p>
           </div>
 
+          <!-- Vista Singola -->
           <div id="singleViewContainer" class="hidden w-full flex justify-center">
-            <img id="mainResultImg" class="max-h-[540px] w-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white" alt="Risultato">
+            <canvas id="mainCanvas" class="max-h-[630px] max-w-full object-contain rounded-md shadow-[0_20px_50px_rgba(0,0,0,0.75)]"></canvas>
+            <img id="origOnlyImg" class="hidden max-h-[630px] max-w-full object-contain rounded-md shadow-2xl bg-white" alt="Originale">
           </div>
 
-          <div id="sideBySideContainer" class="hidden w-full grid grid-cols-2 gap-3">
+          <!-- Vista Confronto -->
+          <div id="sideBySideContainer" class="hidden w-full grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="text-center">
-              <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Disegno B/N</span>
-              <img id="sideOriginalImg" class="max-h-[460px] w-full object-contain rounded-xl border border-slate-200 bg-white" alt="Originale">
+              <span class="text-xs font-bold text-amber-100/80 uppercase tracking-wider block mb-1">Line Art Originale</span>
+              <img id="sideOriginalImg" class="max-h-[450px] w-full object-contain rounded-md border border-white/20 bg-white" alt="Originale">
             </div>
             <div class="text-center">
-              <span class="text-xs font-bold text-purple-600 uppercase tracking-wider block mb-1">Bozza a Colori</span>
-              <img id="sideColoredImg" class="max-h-[460px] w-full object-contain rounded-xl border border-purple-200 bg-white" alt="Colorato">
+              <span class="text-xs font-bold text-amber-300 uppercase tracking-wider block mb-1">Masterpiece Ohuhu</span>
+              <img id="sideColoredImg" class="max-h-[450px] w-full object-contain rounded-md border border-amber-400/40 bg-white" alt="Colorato">
             </div>
           </div>
         </div>
 
-        <!-- Mappa Guida Colori Personalizzata -->
-        <div id="guideSection" class="hidden mt-4 pt-4 border-t border-slate-100">
-          <h3 class="text-xs font-bold text-purple-800 uppercase tracking-wider mb-2">Mappa dettagliata dei colori usati</h3>
-          <div id="guideItems" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs"></div>
-        </div>
-      </div>
-
-      <!-- Pennarelli Ohuhu Honolulu B -->
-      <div class="bg-white/95 rounded-3xl p-6 border border-purple-100 shadow-xl shadow-purple-100/30">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-            <span>🖊️</span> Pennarelli Ohuhu Honolulu B da Preparare
-          </h2>
-          <span class="text-xs px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 font-bold border border-purple-200">Doppia Punta Brush / Chisel</span>
+        <!-- Ricetta Triplette Ohuhu -->
+        <div id="usedMarkersSection" class="hidden mt-5 pt-4 border-t border-white/10">
+          <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div>
+              <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider">📌 Guida Completa alle Sfumature (Triplette Ohuhu Honolulu B)</h3>
+              <p class="text-[11px] text-slate-400">Ogni zona usa 3 pennarelli sfumati insieme (Luce → Tono Medio → Ombra Profonda):</p>
+            </div>
+            <button type="button" id="btnDownload" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 to-rose-500 hover:opacity-95 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer shadow-lg">
+              💾 Salva Immagine Alta Qualità
+            </button>
+          </div>
+          <div id="usedMarkersList" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
         </div>
 
-        <div id="ohuhuSwatches" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
       </div>
 
     </div>
   </main>
 
-  <!-- Modal Inserimento API Key -->
-  <div id="keyModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-100 space-y-4">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold text-slate-800">Imposta Chiave API</h3>
-        <button type="button" onclick="document.getElementById('keyModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 text-lg cursor-pointer">✕</button>
-      </div>
-      <p class="text-xs text-slate-500 leading-relaxed">
-        Inserisci la tua API Key di Google AI Studio. Viene salvata su questo dispositivo.
-      </p>
-      <div>
-        <input type="password" id="inputApiKey" placeholder="Incolla qui la chiave..." class="w-full text-sm p-3 rounded-xl border border-slate-200 focus:outline-none focus:border-purple-400 font-mono">
-      </div>
-      <div class="flex justify-end gap-2">
-        <button type="button" onclick="document.getElementById('keyModal').classList.add('hidden')" class="px-4 py-2 rounded-xl text-slate-500 text-xs font-semibold cursor-pointer">Annulla</button>
-        <button type="button" id="btnSaveKey" class="px-5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md transition cursor-pointer">Salva Chiave</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const OHUHU_PALETTES = {
-      pastello: [
-        { code: 'B040', name: 'Baby Blue', hex: '#A8D4F0', role: 'Cucciolo / Sfumature' },
-        { code: 'V050', name: 'Lilac', hex: '#D2BCEB', role: 'Cappello / Dettagli magici' },
-        { code: 'YR1',  name: 'Peach Light', hex: '#FAD4C0', role: 'Zucche pastello' },
-        { code: 'Y13',  name: 'Pastel Yellow', hex: '#FFF4A3', role: 'Stelline e luce' },
-        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Piantine e calderone' },
-        { code: 'E020', name: 'Milky Cream', hex: '#F7E7D0', role: 'Dettagli e fondo' }
-      ],
-      autunno: [
-        { code: 'YR4',  name: 'Apricot Orange', hex: '#FFB380', role: 'Zucche' },
-        { code: 'YR5',  name: 'Coral Orange', hex: '#E66A38', role: 'Ombre zucche' },
-        { code: 'E310', name: 'Warm Oak', hex: '#A47551', role: 'Legno e scaffale' },
-        { code: 'Y2',   name: 'Sunflower', hex: '#FAD02C', role: 'Fiamme e stelle' },
-        { code: 'V280', name: 'Night Violet', hex: '#634473', role: 'Cappello mago' },
-        { code: 'G5',   name: 'Poison Green', hex: '#77C924', role: 'Pozione' }
-      ],
-      magico: [
-        { code: 'V280', name: 'Night Violet', hex: '#634473', role: 'Abiti e sfondo' },
-        { code: 'PB10', name: 'Navy Blue', hex: '#2A4468', role: 'Ombre profonde' },
-        { code: 'B070', name: 'Tahitian Blue', hex: '#4CB5E6', role: 'Riflessi luce' },
-        { code: 'RP1',  name: 'Neon Pink', hex: '#FF5C9D', role: 'Pozione incantata' },
-        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Bolle e magia' },
-        { code: '0',    name: 'Colorless Blender', hex: '#F0F0F0', role: 'Sfumature soft' }
-      ],
-      natura: [
-        { code: 'G1',   name: 'Pale Green', hex: '#CDE5B8', role: 'Foglie' },
-        { code: 'YG060',name: 'Salvia Green', hex: '#8FB37B', role: 'Muschio' },
-        { code: 'E310', name: 'Warm Oak', hex: '#A47551', role: 'Tavoli e libri' },
-        { code: 'E020', name: 'Milky Cream', hex: '#F7E7D0', role: 'Personaggi' },
-        { code: 'Y13',  name: 'Pastel Yellow', hex: '#FFF4A3', role: 'Luci soffuse' },
-        { code: 'B020', name: 'Light Minty Blue', hex: '#C2E8E4', role: 'Acqua e boccette' }
-      ]
+    // Database Triplette Reali Ohuhu Honolulu B (3 gradi di sfumatura per ogni materiale: Luce, Base, Ombra Scure + Texture)
+    const MASTER_THEMES = {
+      alchimia: {
+        primaryGlow: [228, 255, 75],   // Pozione giallo-verde fluo (GY170 + Y030)
+        secondaryGlow: [255, 145, 35], // Fuoco calderone (YR170)
+        ambientTint: [35, 22, 14],     // Ombra ambiente calda
+        materials: {
+          wood_wall: {
+            name: 'Legno Antico Staccionata',
+            codes: 'E160 → E240 → E310',
+            lightHex: '#9E704C', midHex: '#6E472B', darkHex: '#361E0F',
+            tex: 'wood_vertical', role: 'Staccionata / Parete legno'
+          },
+          wood_shelf: {
+            name: 'Scaffale Quercia Scura',
+            codes: 'E220 → E280 → E310',
+            lightHex: '#785A46', midHex: '#4F392B', darkHex: '#261A13',
+            tex: 'wood_horizontal', role: 'Scaffale / Libri / Mestolo'
+          },
+          fur_puppy: {
+            name: 'Peluche Barboncino Caldo',
+            codes: 'Y120 → YR240 → E130',
+            lightHex: '#F5B563', midHex: '#D17835', darkHex: '#783610',
+            tex: 'fluffy_fur', role: 'Barboncino (Tutto il corpo)'
+          },
+          pumpkin_orange: {
+            name: 'Zucca Reale Sfumata',
+            codes: 'YR190 → YR070 → E090',
+            lightHex: '#FF9E3B', midHex: '#D95618', darkHex: '#6E2005',
+            tex: 'smooth_organic', role: 'Zucca grande / Cappello zucca'
+          },
+          witch_hat: {
+            name: 'Cappello Strega Indaco',
+            codes: 'B050 → V270 → V330',
+            lightHex: '#6C63A6', midHex: '#433B75', darkHex: '#1E183B',
+            tex: 'velvet', role: 'Cappello da mago'
+          },
+          cauldron_iron: {
+            name: 'Ghisa Nera Riflettente',
+            codes: 'CG050 → CG080 → 120',
+            lightHex: '#6E665F', midHex: '#3D3734', darkHex: '#171413',
+            tex: 'metal', role: 'Calderone'
+          },
+          magic_glow: {
+            name: 'Pozione & Stelle Fluo',
+            codes: 'Y010 → Y030 → GY170',
+            lightHex: '#FFFFB5', midHex: '#E6FF47', darkHex: '#8CD41C',
+            tex: 'emissive', role: 'Pozione / Bolle / Stelline / Bacchetta'
+          },
+          fire_flame: {
+            name: 'Fiamma Ardente',
+            codes: 'Y030 → YR170 → R160',
+            lightHex: '#FFF066', midHex: '#FF7B1C', darkHex: '#B82309',
+            tex: 'emissive', role: 'Fuoco sotto il calderone'
+          },
+          duck_cream: {
+            name: 'Anatroccolo Velluto Crema',
+            codes: 'E020 → E050 → YR210',
+            lightHex: '#FADBB8', midHex: '#D9A77E', darkHex: '#8C5B37',
+            tex: 'smooth_organic', role: 'Anatroccolo'
+          },
+          green_potion: {
+            name: 'Ampolle & Piantina Verde',
+            codes: 'GY4 → G340 → G440',
+            lightHex: '#B5F266', midHex: '#59AD3E', darkHex: '#1F4F18',
+            tex: 'glass', role: 'Liquido ampolle / Piantina / Sfera'
+          },
+          stone_floor: {
+            name: 'Pietra Antica Pavimento',
+            codes: 'BG5 → CG070 → CG090',
+            lightHex: '#828C85', midHex: '#4D5759', darkHex: '#22282B',
+            tex: 'stone', role: 'Lastre di pietra in basso'
+          }
+        }
+      },
+      noir: {
+        primaryGlow: [215, 255, 40],
+        secondaryGlow: [190, 255, 65],
+        ambientTint: [15, 18, 20],
+        materials: {
+          wood_wall: { name: 'Legno Carbone Noir', codes: 'CG050 → CG070 → CG090', lightHex: '#636669', midHex: '#3D4042', darkHex: '#181A1C', tex: 'wood_vertical', role: 'Staccionata Noir' },
+          wood_shelf: { name: 'Scaffale Antracite', codes: 'CG060 → CG080 → 120', lightHex: '#525557', midHex: '#303234', darkHex: '#141517', tex: 'wood_horizontal', role: 'Scaffale Noir' },
+          fur_puppy: { name: 'Peluche Grigio Fumo', codes: 'NG02 → NG05 → NG07', lightHex: '#B8B8B8', midHex: '#7D7D7D', darkHex: '#3D3D3D', tex: 'fluffy_fur', role: 'Barboncino Scala di Grigi' },
+          pumpkin_orange: { name: 'Zucca Grigio Grafite', codes: 'NG03 → NG06 → NG09', lightHex: '#969899', midHex: '#57595B', darkHex: '#242526', tex: 'smooth_organic', role: 'Zucche in Grigio' },
+          witch_hat: { name: 'Cappello Nero Velluto', codes: 'CG050 → CG080 → 120', lightHex: '#6E7175', midHex: '#3A3C40', darkHex: '#16171A', tex: 'velvet', role: 'Cappello Mago' },
+          cauldron_iron: { name: 'Calderone Ossidiana', codes: 'CG060 → CG090 → 120', lightHex: '#666968', midHex: '#333635', darkHex: '#121313', tex: 'metal', role: 'Calderone' },
+          magic_glow: { name: 'NEON Fluo Radioattivo', codes: 'Y010 → GY170 → G340', lightHex: '#FFFFBA', midHex: '#DEFF2E', darkHex: '#78CC14', tex: 'emissive', role: 'Pozione / Stelle / Libro Neon' },
+          fire_flame: { name: 'Fiamme Argento Chiaro', codes: '0 → CG020 → CG050', lightHex: '#F0F2F5', midHex: '#B8BDC2', darkHex: '#6E7378', tex: 'smooth_organic', role: 'Fiamme in Grigio' },
+          duck_cream: { name: 'Anatroccolo Grigio Perla', codes: 'CG010 → CG030 → CG060', lightHex: '#E2E5E8', midHex: '#A8ADB3', darkHex: '#595E63', tex: 'smooth_organic', role: 'Anatroccolo' },
+          green_potion: { name: 'Ampolle Vetro Fumè', codes: 'CG020 → CG050 → CG080', lightHex: '#C8CFD4', midHex: '#788085', darkHex: '#2E3336', tex: 'glass', role: 'Ampolle' },
+          stone_floor: { name: 'Pietra Basalto', codes: 'CG040 → CG070 → CG090', lightHex: '#7A8082', midHex: '#45494C', darkHex: '#1C1E21', tex: 'stone', role: 'Pavimento' }
+        }
+      },
+      fiaba: {
+        primaryGlow: [255, 240, 130],
+        secondaryGlow: [255, 180, 215],
+        ambientTint: [45, 25, 45],
+        materials: {
+          wood_wall: { name: 'Legno Cipria & Nocciola', codes: 'E020 → E160 → E220', lightHex: '#EBD3BC', midHex: '#C49F80', darkHex: '#825F45', tex: 'wood_vertical', role: 'Staccionata' },
+          wood_shelf: { name: 'Scaffale Malva Chiaro', codes: 'V020 → V050 → V250', lightHex: '#CFC0DE', midHex: '#9C86B5', darkHex: '#5B4873', tex: 'wood_horizontal', role: 'Scaffale' },
+          fur_puppy: { name: 'Peluche Crema & Pesca', codes: 'E010 → YR110 → YR210', lightHex: '#FFF0DE', midHex: '#E8B78E', darkHex: '#9E6842', tex: 'fluffy_fur', role: 'Barboncino' },
+          pumpkin_orange: { name: 'Zucca Rosa Marshmallow', codes: 'RV160 → RV240 → RV300', lightHex: '#FFC7DC', midHex: '#E685AC', darkHex: '#94355C', tex: 'smooth_organic', role: 'Zucche Pastello' },
+          witch_hat: { name: 'Cappello Lilla Fatato', codes: 'V030 → V060 → V270', lightHex: '#DEC4FA', midHex: '#9E76CC', darkHex: '#51317A', tex: 'velvet', role: 'Cappello' },
+          cauldron_iron: { name: 'Calderone Indaco Pastello', codes: 'B030 → B070 → PB7', lightHex: '#9ECAE6', midHex: '#5C8BB0', darkHex: '#2B4663', tex: 'metal', role: 'Calderone' },
+          magic_glow: { name: 'Luce Stellare Dorata', codes: '0 → Y010 → Y140', lightHex: '#FFFFE0', midHex: '#FFF275', darkHex: '#E6B429', tex: 'emissive', role: 'Pozione & Stelle' },
+          fire_flame: { name: 'Fiamma Pesca Corallo', codes: 'Y010 → YR170 → RV260', lightHex: '#FFF5AD', midHex: '#FFA382', darkHex: '#D44E6A', tex: 'emissive', role: 'Fuoco' },
+          duck_cream: { name: 'Anatroccolo Vaniglia', codes: 'Y010 → Y120 → YR110', lightHex: '#FFF9D2', midHex: '#F2D388', darkHex: '#B88D48', tex: 'smooth_organic', role: 'Anatroccolo' },
+          green_potion: { name: 'Cristallo Acquamarea', codes: 'G020 → B040 → B080', lightHex: '#C8FAE8', midHex: '#73C7B8', darkHex: '#2D6E6B', tex: 'glass', role: 'Ampolle' },
+          stone_floor: { name: 'Pietra Lavanda', codes: 'CG020 → V030 → PB10', lightHex: '#D0C8DE', midHex: '#8E84A6', darkHex: '#463F59', tex: 'stone', role: 'Pavimento' }
+        }
+      },
+      notturno: {
+        primaryGlow: [95, 255, 210],
+        secondaryGlow: [255, 130, 50],
+        ambientTint: [10, 18, 30],
+        materials: {
+          wood_wall: { name: 'Legno Ebano Notturno', codes: 'E240 → E310 → PB10', lightHex: '#6E5246', midHex: '#422F29', darkHex: '#1C1414', tex: 'wood_vertical', role: 'Staccionata' },
+          wood_shelf: { name: 'Scaffale Notte', codes: 'CG060 → PB7 → PB10', lightHex: '#525C6E', midHex: '#313847', darkHex: '#151922', tex: 'wood_horizontal', role: 'Scaffale' },
+          fur_puppy: { name: 'Peluche Cannella Ambrato', codes: 'YR170 → YR240 → E310', lightHex: '#E08F52', midHex: '#A65926', darkHex: '#4A210A', tex: 'fluffy_fur', role: 'Barboncino' },
+          pumpkin_orange: { name: 'Zucca Rubino d\'Autunno', codes: 'YR070 → R160 → R230', lightHex: '#E86138', midHex: '#AD2E1A', darkHex: '#4F0E07', tex: 'smooth_organic', role: 'Zucche' },
+          witch_hat: { name: 'Cappello Blu Mezzanotte', codes: 'B070 → PB7 → V330', lightHex: '#4D73A6', midHex: '#283E66', darkHex: '#101930', tex: 'velvet', role: 'Cappello' },
+          cauldron_iron: { name: 'Calderone Ferro Blu', codes: 'CG050 → CG080 → 120', lightHex: '#5C6973', midHex: '#2F373D', darkHex: '#12161A', tex: 'metal', role: 'Calderone' },
+          magic_glow: { name: 'Fuoco Fatuo Turchese', codes: 'G020 → G320 → B140', lightHex: '#D4FFF0', midHex: '#52F7B8', darkHex: '#10997A', tex: 'emissive', role: 'Pozione & Stelle' },
+          fire_flame: { name: 'Brace Arancio', codes: 'Y040 → YR190 → R160', lightHex: '#FFE866', midHex: '#F56E1C', darkHex: '#9E1B08', tex: 'emissive', role: 'Fuoco' },
+          duck_cream: { name: 'Anatroccolo Chiaro di Luna', codes: 'E020 → E160 → E240', lightHex: '#EDE0D1', midHex: '#B89E82', darkHex: '#6E563E', tex: 'smooth_organic', role: 'Anatroccolo' },
+          green_potion: { name: 'Elisir Smeraldo', codes: 'GY170 → G340 → G440', lightHex: '#A8F77E', midHex: '#3DA654', darkHex: '#154726', tex: 'glass', role: 'Ampolle' },
+          stone_floor: { name: 'Pietra Umida del Bosco', codes: 'BG5 → CG080 → 120', lightHex: '#637573', midHex: '#354242', darkHex: '#161C1D', tex: 'stone', role: 'Pavimento' }
+        }
+      }
     };
 
-    let currentBase64Image = null;
-    let currentColorResult = null;
-    let selectedMood = 'autunno';
-    let currentMimeType = 'image/jpeg';
+    let selectedMood = 'alchimia';
+    let selectedMatKey = 'fur_puppy';
+    let touchMode = 'paint'; // 'paint' | 'light'
+    let originalImageObj = null;
+    let cachedScene = null;
+    let regionMatMap = new Map();
+    let customLightPos = null; // {x, y}
 
-    function checkKey() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('key')) {
-        localStorage.setItem('gemini_api_key', urlParams.get('key'));
-      }
-      const saved = localStorage.getItem('gemini_api_key');
-      const text = document.getElementById('keyStatusText');
-      if (!text) return;
-      if (saved && saved.length > 5) {
-        text.textContent = 'API Key Attiva ✓';
-        text.parentElement.classList.remove('text-rose-700', 'bg-rose-50', 'border-rose-200');
-        text.parentElement.classList.add('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
-      } else {
-        text.textContent = 'Imposta API Key';
-        text.parentElement.classList.remove('text-emerald-700', 'bg-emerald-50', 'border-emerald-200');
-        text.parentElement.classList.add('text-rose-700', 'bg-rose-50', 'border-rose-200');
-      }
+    function hexToRgb(hex) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
     }
 
-    function renderOhuhuPalette(mood) {
-      const container = document.getElementById('ohuhuSwatches');
-      if (!container) return;
-      container.innerHTML = '';
-      const list = OHUHU_PALETTES[mood] || OHUHU_PALETTES.pastello;
+    // Generatore di rumore frattale morbido (FBM) per texture organiche non ripetitive
+    function hash2D(x, y) {
+      let n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453123;
+      return n - Math.floor(n);
+    }
 
-      list.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'p-3 rounded-2xl border border-purple-100 bg-white flex items-center gap-3 shadow-sm hover:shadow-md transition';
-        div.innerHTML = `
-          <div class="w-10 h-10 rounded-xl border border-black/10 flex-shrink-0 shadow-inner" style="background-color: ${m.hex}"></div>
-          <div class="min-w-0">
-            <span class="text-xs font-bold text-slate-800 block">${m.code}</span>
-            <span class="text-[11px] font-semibold text-purple-700 block truncate">${m.name}</span>
-            <span class="text-[10px] text-slate-400 block truncate">${m.role}</span>
+    function smoothNoise(x, y) {
+      const ix = Math.floor(x);
+      const iy = Math.floor(y);
+      const fx = x - ix;
+      const fy = y - iy;
+      const ux = fx * fx * (3 - 2 * fx);
+      const uy = fy * fy * (3 - 2 * fy);
+      const a = hash2D(ix, iy);
+      const b = hash2D(ix + 1, iy);
+      const c = hash2D(ix, iy + 1);
+      const d = hash2D(ix + 1, iy + 1);
+      return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
+    }
+
+    function renderPaletteSwatches(mood) {
+      const container = document.getElementById('ohuhuSwatches');
+      container.innerHTML = '';
+      const mats = MASTER_THEMES[mood].materials;
+      const keys = Object.keys(mats);
+
+      if (!mats[selectedMatKey]) selectedMatKey = keys[0];
+
+      keys.forEach(k => {
+        const m = mats[k];
+        const isSel = selectedMatKey === k;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `p-2.5 rounded-2xl border text-left transition flex items-center gap-2.5 cursor-pointer ${
+          isSel ? 'marker-active border-pink-400' : 'border-white/10 bg-slate-900/60 hover:border-white/30'
+        }`;
+        btn.innerHTML = `
+          <div class="w-9 h-9 rounded-xl border border-white/20 flex-shrink-0 shadow-inner"
+               style="background: linear-gradient(135deg, ${m.lightHex} 0%, ${m.midHex} 50%, ${m.darkHex} 100%)"></div>
+          <div class="min-w-0 flex-1">
+            <span class="text-[11px] font-bold text-white block truncate">${m.name}</span>
+            <span class="text-[10px] font-bold text-amber-300 block truncate">${m.codes}</span>
+            <span class="text-[9px] text-slate-400 block truncate">${m.role}</span>
           </div>
         `;
-        container.appendChild(div);
+        btn.onclick = () => {
+          selectedMatKey = k;
+          touchMode = 'paint';
+          updateModeUI();
+          renderPaletteSwatches(mood);
+        };
+        container.appendChild(btn);
       });
     }
 
-    function showError(msg) {
-      const banner = document.getElementById('errorBanner');
-      const errText = document.getElementById('errorMessage');
-      if (!banner || !errText) return;
-      if (!msg) {
-        banner.classList.add('hidden');
+    function updateUsedMarkersUI() {
+      const section = document.getElementById('usedMarkersSection');
+      const list = document.getElementById('usedMarkersList');
+      if (!originalImageObj || regionMatMap.size === 0) {
+        section.classList.add('hidden');
         return;
       }
-      errText.textContent = msg;
-      banner.classList.remove('hidden');
+      section.classList.remove('hidden');
+      list.innerHTML = '';
+
+      const mats = MASTER_THEMES[selectedMood].materials;
+      const usedSet = new Set();
+      regionMatMap.forEach(k => usedSet.add(k));
+
+      usedSet.forEach(k => {
+        const m = mats[k];
+        if (!m) return;
+        const card = document.createElement('div');
+        card.className = 'p-3 rounded-2xl bg-slate-900/85 border border-white/10 flex items-center gap-3 text-xs';
+        card.innerHTML = `
+          <div class="flex -space-x-2 flex-shrink-0">
+            <span class="w-6 h-6 rounded-full border border-white/40 shadow" style="background-color: ${m.lightHex}"></span>
+            <span class="w-6 h-6 rounded-full border border-white/40 shadow" style="background-color: ${m.midHex}"></span>
+            <span class="w-6 h-6 rounded-full border border-white/40 shadow" style="background-color: ${m.darkHex}"></span>
+          </div>
+          <div class="min-w-0">
+            <div class="font-bold text-white truncate">${m.name}</div>
+            <div class="text-[11px] text-amber-300 font-bold">Ohuhu: ${m.codes}</div>
+            <div class="text-[10px] text-slate-400 truncate">${m.role}</div>
+          </div>
+        `;
+        list.appendChild(card);
+      });
     }
 
-    // Colorazione guidata per zone: applica le campiture dei singoli elementi preservando i contorni neri
-    function renderMultiZoneColorization(imgSrc, zones) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          const ctx = canvas.getContext('2d');
+    // 1. Analisi Topologica, Campo di Distanza Morbido & Densità Contorni (Ambient Occlusion)
+    function analyzeSceneTopology(img) {
+      const canvas = document.getElementById('mainCanvas');
+      const maxDim = 820;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
+        else { w = Math.round((w * maxDim) / h); h = maxDim; }
+      }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
 
-          // Fondo base
-          ctx.fillStyle = '#FFFDF9';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const srcData = ctx.getImageData(0, 0, w, h);
+      const pixels = srcData.data;
 
-          // Disegna le campiture per ogni zona identificata
-          if (zones && zones.length > 0) {
-            zones.forEach(z => {
-              const x = (z.box[0] / 100) * canvas.width;
-              const y = (z.box[1] / 100) * canvas.height;
-              const w = ((z.box[2] - z.box[0]) / 100) * canvas.width;
-              const h = ((z.box[3] - z.box[1]) / 100) * canvas.height;
+      // Mappa linee nere e grigiore originale
+      const isWall = new Uint8Array(w * h);
+      const lineLuminance = new Float32Array(w * h);
+      for (let i = 0; i < w * h; i++) {
+        const idx = i * 4;
+        const lum = (0.299 * pixels[idx] + 0.587 * pixels[idx + 1] + 0.114 * pixels[idx + 2]) / 255;
+        lineLuminance[i] = lum;
+        if (lum < 0.64) isWall[i] = 1;
+      }
 
-              ctx.save();
-              ctx.beginPath();
-              // Campitura sfumata naturale tipo marker ad alcool
-              const grad = ctx.createRadialGradient(x + w/2, y + h/2, 5, x + w/2, y + h/2, Math.max(w, h)/1.5);
-              grad.addColorStop(0, z.hex);
-              grad.addColorStop(1, z.hex);
-              ctx.fillStyle = grad;
-              ctx.fillRect(x, y, w, h);
-              ctx.restore();
+      // Chiusura micro-fessure e Distance Transform
+      const closedWall = new Uint8Array(w * h);
+      const distFromEdge = new Uint8Array(w * h);
+      const bfs = new Int32Array(w * h);
+      let head = 0, tail = 0;
+
+      for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+          const p = y * w + x;
+          if (isWall[p] || isWall[p - 1] || isWall[p + 1] || isWall[p - w] || isWall[p + w]) {
+            closedWall[p] = 1;
+            distFromEdge[p] = 0;
+            bfs[tail++] = p;
+          } else {
+            distFromEdge[p] = 255;
+          }
+        }
+      }
+
+      while (head < tail) {
+        const curr = bfs[head++];
+        const d = distFromEdge[curr];
+        if (d >= 45) continue;
+        const cx = curr % w;
+        const cy = (curr / w) | 0;
+        if (cx + 1 < w && distFromEdge[curr + 1] === 255) { distFromEdge[curr + 1] = d + 1; bfs[tail++] = curr + 1; }
+        if (cx - 1 >= 0 && distFromEdge[curr - 1] === 255) { distFromEdge[curr - 1] = d + 1; bfs[tail++] = curr - 1; }
+        if (cy + 1 < h && distFromEdge[curr + w] === 255) { distFromEdge[curr + w] = d + 1; bfs[tail++] = curr + w; }
+        if (cy - 1 >= 0 && distFromEdge[curr - w] === 255) { distFromEdge[curr - w] = d + 1; bfs[tail++] = curr - w; }
+      }
+
+      // Segmentazione Regioni
+      const labels = new Int32Array(w * h).fill(-1);
+      const regions = [];
+      let currentLabel = 0;
+      const q = new Int32Array(w * h);
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const startPos = y * w + x;
+          if (closedWall[startPos] === 0 && labels[startPos] === -1) {
+            let rHead = 0, rTail = 0;
+            q[rTail++] = startPos;
+            labels[startPos] = currentLabel;
+            let touchesBorder = false;
+            let minX = x, maxX = x, minY = y, maxY = y;
+            let maxDist = 1;
+            const pixelIndices = [];
+
+            while (rHead < rTail) {
+              const curr = q[rHead++];
+              pixelIndices.push(curr);
+              const cx = curr % w;
+              const cy = (curr / w) | 0;
+
+              if (cx < minX) minX = cx;
+              if (cx > maxX) maxX = cx;
+              if (cy < minY) minY = cy;
+              if (cy > maxY) maxY = cy;
+              if (distFromEdge[curr] > maxDist && distFromEdge[curr] < 255) maxDist = distFromEdge[curr];
+
+              if (cx <= 4 || cx >= w - 5 || cy <= 4 || cy >= h - 5) touchesBorder = true;
+
+              if (cx + 1 < w && closedWall[curr + 1] === 0 && labels[curr + 1] === -1) { labels[curr + 1] = currentLabel; q[rTail++] = curr + 1; }
+              if (cx - 1 >= 0 && closedWall[curr - 1] === 0 && labels[curr - 1] === -1) { labels[curr - 1] = currentLabel; q[rTail++] = curr - 1; }
+              if (cy + 1 < h && closedWall[curr + w] === 0 && labels[curr + w] === -1) { labels[curr + w] = currentLabel; q[rTail++] = curr + w; }
+              if (cy - 1 >= 0 && closedWall[curr - w] === 0 && labels[curr - w] === -1) { labels[curr - w] = currentLabel; q[rTail++] = curr - w; }
+            }
+
+            regions.push({
+              id: currentLabel,
+              size: pixelIndices.length,
+              touchesBorder,
+              minX, maxX, minY, maxY,
+              centerX: (minX + maxX) / (2 * w),
+              centerY: (minY + maxY) / (2 * h),
+              aspect: (maxY - minY + 1) / (maxX - minX + 1),
+              maxDist: Math.max(4, maxDist),
+              pixels: pixelIndices
             });
+            currentLabel++;
+          }
+        }
+      }
+
+      cachedScene = { w, h, isWall, closedWall, distFromEdge, lineLuminance, labels, regions };
+    }
+
+    // 2. Mappatura Semantica Organica (Riconosce i soggetti ed evita la frammentazione rigida)
+    function assignMasterpieceMaterials() {
+      if (!cachedScene) return;
+      const { w, h, regions } = cachedScene;
+      regionMatMap.clear();
+      const totalArea = w * h;
+
+      regions.forEach((reg) => {
+        // Escludi la cornice esterna di carta pergamena
+        if (reg.touchesBorder && reg.size > totalArea * 0.035) return;
+        if (reg.size < 10) return;
+
+        const relArea = reg.size / totalArea;
+        const cx = reg.centerX;
+        const cy = reg.centerY;
+
+        // 1. Fuoco sotto il calderone
+        if (cx > 0.39 && cx < 0.63 && cy > 0.71 && cy < 0.82 && relArea < 0.0045) {
+          regionMatMap.set(reg.id, 'fire_flame');
+          return;
+        }
+
+        // 2. Pozione nel calderone, bolle, stelline sul cappello e stella della bacchetta
+        const isSmallDetail = relArea < 0.0038;
+        const isCentralGlowZone = (cx > 0.39 && cx < 0.62 && cy > 0.43 && cy < 0.66);
+        const isHatStar = (cx > 0.62 && cy > 0.17 && cy < 0.36 && isSmallDetail);
+        const isPotionSurface = (cx > 0.41 && cx < 0.61 && cy > 0.59 && cy < 0.65 && reg.aspect < 0.55);
+
+        if (isHatStar || isPotionSurface || (isSmallDetail && isCentralGlowZone)) {
+          regionMatMap.set(reg.id, 'magic_glow');
+          return;
+        }
+
+        // 3. Zucca grande in basso a sinistra + Cappello a zucca dell'anatroccolo + Pantaloni zucca
+        if ((cx < 0.43 && cy > 0.62 && cy < 0.83) || (cx > 0.18 && cx < 0.39 && cy > 0.33 && cy < 0.47)) {
+          if (cx < 0.30 && cy > 0.72) {
+            regionMatMap.set(reg.id, 'green_potion'); // Boccetta inclinata in primo piano a sinistra
+          } else {
+            regionMatMap.set(reg.id, 'pumpkin_orange');
+          }
+          return;
+        }
+
+        // Pantaloncini a sbuffo dell'anatroccolo illuminati dal calderone
+        if (cx > 0.18 && cx < 0.37 && cy > 0.55 && cy <= 0.63) {
+          regionMatMap.set(reg.id, 'magic_glow');
+          return;
+        }
+
+        // 4. Anatroccolo (viso, corpo, becco)
+        if (cx > 0.19 && cx < 0.40 && cy >= 0.45 && cy <= 0.65) {
+          regionMatMap.set(reg.id, 'duck_cream');
+          return;
+        }
+
+        // 5. Calderone centrale in ghisa
+        if (cx > 0.38 && cx < 0.65 && cy > 0.62 && cy <= 0.79 && relArea > 0.003) {
+          regionMatMap.set(reg.id, 'cauldron_iron');
+          return;
+        }
+
+        // 6. Pietre del pavimento in basso
+        if (cy >= 0.79) {
+          if (cx > 0.38 && cx < 0.65 && cy < 0.85) {
+            regionMatMap.set(reg.id, 'wood_shelf'); // Ceppi di legna sotto il fuoco
+          } else if (cx > 0.66 && cy < 0.84) {
+            regionMatMap.set(reg.id, 'wood_shelf'); // Libro appoggiato a destra
+          } else {
+            regionMatMap.set(reg.id, 'stone_floor');
+          }
+          return;
+        }
+
+        // 7. Cappello da strega in alto a destra
+        if (cx > 0.58 && cy > 0.16 && cy < 0.38) {
+          regionMatMap.set(reg.id, 'witch_hat');
+          return;
+        }
+
+        // 8. Barboncino (testa, orecchie, braccia, corpo, zampe: tutto unito nel materiale peluche!)
+        if (cx >= 0.51 && cy >= 0.31 && cy < 0.79) {
+          regionMatMap.set(reg.id, 'fur_puppy');
+          return;
+        }
+
+        // 9. Ampolle, piantina in alto a sinistra e boccette sullo scaffale
+        if ((cy < 0.28 && cx < 0.50) || (cx > 0.36 && cx < 0.48 && cy > 0.32 && cy < 0.62 && relArea < 0.006)) {
+          regionMatMap.set(reg.id, 'green_potion');
+          return;
+        }
+
+        // 10. Staccionata verticale di fondo vs Scaffalatura a sinistra
+        if (reg.aspect > 2.2 || cx > 0.46) {
+          regionMatMap.set(reg.id, 'wood_wall');
+        } else {
+          regionMatMap.set(reg.id, 'wood_shelf');
+        }
+      });
+    }
+
+    // 3. Motore Pittorico Masterpiece (Macro-Volumi Continui + Inchiostro Diffuso + Gelly Roll Highlights)
+    function renderMasterpiece() {
+      if (!cachedScene || !originalImageObj) return;
+      const { w, h, isWall, closedWall, distFromEdge, lineLuminance, regions } = cachedScene;
+      const canvas = document.getElementById('mainCanvas');
+      const ctx = canvas.getContext('2d');
+      const theme = MASTER_THEMES[selectedMood] || MASTER_THEMES.alchimia;
+
+      const glowPower = parseInt(document.getElementById('sliderGlow').value, 10) / 100;
+      const depthPower = parseInt(document.getElementById('sliderDepth').value, 10) / 100;
+      const addWhiteGel = document.getElementById('chkHighlights').checked;
+
+      // Calcola i Bounding Box GLOBALI per ogni materiale (così tutte le parti del barboncino o della zucca sfumano come un UNICO grande volume 3D!)
+      const macroBounds = {};
+      regions.forEach(reg => {
+        const matKey = regionMatMap.get(reg.id);
+        if (!matKey) return;
+        if (!macroBounds[matKey]) {
+          macroBounds[matKey] = { minX: reg.minX, maxX: reg.maxX, minY: reg.minY, maxY: reg.maxY };
+        } else {
+          const b = macroBounds[matKey];
+          if (reg.minX < b.minX) b.minX = reg.minX;
+          if (reg.maxX > b.maxX) b.maxX = reg.maxX;
+          if (reg.minY < b.minY) b.minY = reg.minY;
+          if (reg.maxY > b.maxY) b.maxY = reg.maxY;
+        }
+      });
+
+      // Posizione del faro luminoso principale (Calderone / Stella)
+      const lightX = customLightPos ? customLightPos.x : w * 0.50;
+      const lightY = customLightPos ? customLightPos.y : h * 0.57;
+      const fireX = w * 0.51;
+      const fireY = h * 0.76;
+
+      // Buffer RGB floating-point per permettere la diffusione morbida dell'inchiostro ad alcol
+      const rBuf = new Float32Array(w * h);
+      const gBuf = new Float32Array(w * h);
+      const bBuf = new Float32Array(w * h);
+      const paintedMask = new Uint8Array(w * h);
+
+      // 1. Carta Pergamena Artistica con grana e vignettatura calda ai bordi
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const p = y * w + x;
+          const dx = (x / w) - 0.5;
+          const dy = (y / h) - 0.5;
+          const vig = Math.pow(Math.hypot(dx, dy) * 1.35, 1.6);
+          const paperTex = (smoothNoise(x * 0.25, y * 0.25) - 0.5) * 10 + (hash2D(x, y) - 0.5) * 5;
+
+          rBuf[p] = Math.min(255, Math.max(0, 244 - vig * 38 + paperTex));
+          gBuf[p] = Math.min(255, Math.max(0, 234 - vig * 48 + paperTex));
+          bBuf[p] = Math.min(255, Math.max(0, 214 - vig * 64 + paperTex));
+        }
+      }
+
+      // 2. Stesura Multistrato a 3 Pennarelli (Luce + Medio + Ombra) con fusione Macro-Volume
+      regions.forEach((reg) => {
+        const matKey = regionMatMap.get(reg.id);
+        if (!matKey) return;
+        const mat = theme.materials[matKey];
+        if (!mat) return;
+
+        const lightRgb = hexToRgb(mat.lightHex);
+        const midRgb = hexToRgb(mat.midHex);
+        const darkRgb = hexToRgb(mat.darkHex);
+
+        const mBox = macroBounds[matKey] || reg;
+        const macroW = Math.max(1, mBox.maxX - mBox.minX);
+        const macroH = Math.max(1, mBox.maxY - mBox.minY);
+        const regW = Math.max(1, reg.maxX - reg.minX);
+        const regH = Math.max(1, reg.maxY - reg.minY);
+
+        for (let i = 0; i < reg.pixels.length; i++) {
+          const p = reg.pixels[i];
+          paintedMask[p] = 1;
+          const cx = p % w;
+          const cy = (p / w) | 0;
+
+          // Coordinate locali (dentro il singolo pezzo) + coordinate MACRO (dentro l'intero soggetto!)
+          const localX = (cx - reg.minX) / regW;
+          const localY = (cy - reg.minY) / regH;
+          const macroX = (cx - mBox.minX) / macroW;
+          const macroY = (cy - mBox.minY) / macroH;
+
+          // Distanza morbida dal contorno nero (Cushion Shading tipico dei pennarelli Brush)
+          const d = Math.min(distFromEdge[p], reg.maxDist);
+          const edgeRatio = d / reg.maxDist; // 0 sul tratto nero, 1 nel centro morbido
+          const softContourShadow = Math.pow(1 - edgeRatio, 1.75) * 0.55;
+
+          // Direzione rispetto alla sorgente luminosa magica (Calderone)
+          const dxL = lightX - cx;
+          const dyL = lightY - cy;
+          const distL = Math.hypot(dxL, dyL);
+
+          // Gradiente continuo sul Macro-Volume: la parte del soggetto vicina alla luce è chiara, quella lontana scivola nell'ombra!
+          const distNorm = Math.min(1, distL / (w * 0.55));
+          let tonePos = (distNorm * 0.55 + softContourShadow * 0.45 + macroY * 0.15) * depthPower;
+
+          // --- TEXTURE PROCEDURALI AVANZATE ---
+          if (mat.tex === 'wood_vertical') {
+            // Fibre verticali continue della staccionata + venature ondulate + ombra sotto il soffitto
+            const plankGrain = Math.sin(cx * 0.55 + smoothNoise(cx * 0.08, cy * 0.03) * 6.0) * 0.12;
+            const fineWood = (smoothNoise(cx * 0.9, cy * 0.08) - 0.5) * 0.14;
+            const topDarkening = Math.pow(1 - cy / h, 1.4) * 0.35;
+            tonePos += plankGrain + fineWood + topDarkening;
+          } else if (mat.tex === 'wood_horizontal') {
+            const shelfGrain = Math.sin(cy * 0.6 + smoothNoise(cx * 0.04, cy * 0.1) * 5.0) * 0.10;
+            tonePos += shelfGrain + 0.12;
+          } else if (mat.tex === 'fluffy_fur') {
+            // Texture pelo riccio barboncino (multi-scale stippling + riccioli morbidi)
+            const curls = (smoothNoise(cx * 0.22, cy * 0.22) - 0.5) * 0.22;
+            const microFur = (hash2D(Math.floor(cx * 0.7), Math.floor(cy * 0.7)) - 0.5) * 0.14;
+            // Le orecchie e la schiena esterna sono più scure e calde, il musetto e la pancia verso la pozione sono più chiari
+            const earShadow = (cx > w * 0.76 || cx < w * 0.56) ? 0.18 : -0.08;
+            tonePos += curls + microFur + earShadow;
+          } else if (mat.tex === 'smooth_organic') {
+            // Sfumatura rotonda vellutata per le zucche e l'anatroccolo
+            const sphereDist = Math.hypot(localX - 0.45, localY - 0.42);
+            tonePos = (sphereDist * 0.65 + softContourShadow * 0.45) * depthPower;
+          } else if (mat.tex === 'stone') {
+            const mottling = (smoothNoise(cx * 0.15, cy * 0.15) - 0.5) * 0.24 + (hash2D(cx, cy) - 0.5) * 0.08;
+            tonePos += mottling;
+          } else if (mat.tex === 'emissive') {
+            // Pozioni, stelle e fiamme brillano intensamente al centro
+            tonePos = Math.pow(1 - edgeRatio, 1.4) * 0.7;
           }
 
-          // Sovrappone i tratti a china originali intatti al 100%
-          ctx.globalCompositeOperation = 'multiply';
-          ctx.drawImage(img, 0, 0);
-          ctx.globalCompositeOperation = 'source-over';
+          tonePos = Math.min(1, Math.max(0, tonePos));
 
-          resolve(canvas.toDataURL('image/jpeg', 0.95));
-        };
-        img.src = imgSrc;
+          // Interpolazione a 3 Pennarelli: 0.0 = Luce (lightRgb) -> 0.5 = Base (midRgb) -> 1.0 = Ombra (darkRgb)
+          let r, g, b;
+          if (tonePos < 0.48) {
+            const t = tonePos / 0.48;
+            r = lightRgb[0] * (1 - t) + midRgb[0] * t;
+            g = lightRgb[1] * (1 - t) + midRgb[1] * t;
+            b = lightRgb[2] * (1 - t) + midRgb[2] * t;
+          } else {
+            const t = (tonePos - 0.48) / 0.52;
+            r = midRgb[0] * (1 - t) + darkRgb[0] * t;
+            g = midRgb[1] * (1 - t) + darkRgb[1] * t;
+            b = midRgb[2] * (1 - t) + darkRgb[2] * t;
+          }
+
+          // --- ILLUMINAZIONE GLOBALE RADIANTE (OSL dal Calderone e dal Fuoco) ---
+          if (glowPower > 0.02 && mat.tex !== 'emissive') {
+            // 1. Bagliore Magico Primario (Pozione / Stelle)
+            const maxRad = w * 0.48;
+            if (distL < maxRad) {
+              const radialFalloff = Math.pow(1 - distL / maxRad, 1.65);
+              // Verifica se questo lato del volume è affacciato verso la sorgente luminosa
+              const normalX = (cx - (reg.centerX * w)) / (regW * 0.5 + 4);
+              const normalY = (cy - (reg.centerY * h)) / (regH * 0.5 + 4);
+              const dirX = dxL / (distL + 1);
+              const dirY = dyL / (distL + 1);
+              const facing = Math.max(0, normalX * dirX + normalY * dirY + 0.45);
+
+              // Il colore della luce penetra morbido nel volume (Subsurface Scattering)
+              const oslMix = Math.min(0.88, radialFalloff * (0.45 + facing * 0.65) * glowPower * 1.25);
+              r = r * (1 - oslMix) + theme.primaryGlow[0] * oslMix;
+              g = g * (1 - oslMix) + theme.primaryGlow[1] * oslMix;
+              b = b * (1 - oslMix) + theme.primaryGlow[2] * oslMix;
+            }
+
+            // 2. Riflesso Caldo del Fuoco dal basso (su pancia calderone, ceppi e pavimento)
+            const distFire = Math.hypot(fireX - cx, fireY - cy);
+            const fireRad = w * 0.25;
+            if (distFire < fireRad && cy > h * 0.62) {
+              const fFalloff = Math.pow(1 - distFire / fireRad, 1.8) * glowPower * 0.75;
+              r = r * (1 - fFalloff) + theme.secondaryGlow[0] * fFalloff;
+              g = g * (1 - fFalloff) + theme.secondaryGlow[1] * fFalloff;
+              b = b * (1 - fFalloff) + theme.secondaryGlow[2] * fFalloff;
+            }
+          }
+
+          // Riflesso cristallino diagonale sulle ampolle di vetro
+          if (mat.tex === 'glass') {
+            const diag = localX + localY;
+            if (edgeRatio > 0.2 && ((diag > 0.52 && diag < 0.70) || (localX < 0.30 && localY < 0.42))) {
+              r = r + (255 - r) * 0.55;
+              g = g + (255 - g) * 0.55;
+              b = b + (255 - b) * 0.55;
+            }
+          }
+
+          // --- PENNA GEL BIANCA (Sakura Gelly Roll Highlights lungo il bordo interno illuminato) ---
+          if (addWhiteGel && d >= 2 && d <= 4 && reg.size > 180) {
+            const normalX = cx - (reg.centerX * w);
+            const normalY = cy - (reg.centerY * h);
+            const toLightX = lightX - cx;
+            const toLightY = lightY - cy;
+            const dot = (normalX * toLightX + normalY * toLightY) / (Math.hypot(normalX, normalY) * Math.hypot(toLightX, toLightY) + 1);
+            if (dot > 0.58) {
+              const gelStrength = (dot - 0.58) * 1.9;
+              r = Math.min(255, r + (255 - r) * gelStrength);
+              g = Math.min(255, g + (255 - g) * gelStrength);
+              b = Math.min(255, b + (245 - b) * gelStrength);
+            }
+          }
+
+          rBuf[p] = r;
+          gBuf[p] = g;
+          bBuf[p] = b;
+
+          // Sigilla i pixel sotto i bordi neri per zero aloni bianchi
+          if (cx + 1 < w && isWall[p + 1] === 0) { rBuf[p + 1] = r; gBuf[p + 1] = g; bBuf[p + 1] = b; }
+          if (cy + 1 < h && isWall[p + w] === 0) { rBuf[p + w] = r; gBuf[p + w] = g; bBuf[p + w] = b; }
+        }
       });
+
+      // 3. Passaggio di Diffusione Inchiostro ad Alcol (ammorbidisce le sfumature eliminando qualsiasi stacco digitale)
+      const outImageData = ctx.createImageData(w, h);
+      const out = outImageData.data;
+
+      for (let y = 1; y < h - 1; y++) {
+        for (let x = 1; x < w - 1; x++) {
+          const p = y * w + x;
+          const idx = p * 4;
+
+          if (paintedMask[p] && distFromEdge[p] > 1) {
+            // Media pesata 5-tap con i pixel adiacenti della stessa campitura per effetto "ink bleed" su carta
+            const r = (rBuf[p] * 4 + rBuf[p - 1] + rBuf[p + 1] + rBuf[p - w] + rBuf[p + w]) * 0.125;
+            const g = (gBuf[p] * 4 + gBuf[p - 1] + gBuf[p + 1] + gBuf[p - w] + gBuf[p + w]) * 0.125;
+            const b = (bBuf[p] * 4 + bBuf[p - 1] + bBuf[p + 1] + bBuf[p - w] + bBuf[p + w]) * 0.125;
+            out[idx]     = r;
+            out[idx + 1] = g;
+            out[idx + 2] = b;
+          } else {
+            out[idx]     = rBuf[p];
+            out[idx + 1] = gBuf[p];
+            out[idx + 2] = bBuf[p];
+          }
+          out[idx + 3] = 255;
+        }
+      }
+
+      ctx.putImageData(outImageData, 0, 0);
+
+      // 4. Sovrapposizione Line Art Originale (mantiene i contorni neri profondi e vellutati)
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.drawImage(originalImageObj, 0, 0, w, h);
+
+      // 5. Atmosfera Finale & Bloom Ottico Multi-Sorgente (luce soffusa che avvolge la scena)
+      if (glowPower > 0.04) {
+        ctx.globalCompositeOperation = 'screen';
+
+        // Alone primario sulla pozione e sulle bolle centrali
+        const rad1 = w * (0.38 + glowPower * 0.18);
+        const grad1 = ctx.createRadialGradient(lightX, lightY, 4, lightX, lightY, rad1);
+        grad1.addColorStop(0, `rgba(${theme.primaryGlow[0]}, ${theme.primaryGlow[1]}, ${theme.primaryGlow[2]}, ${0.42 * glowPower})`);
+        grad1.addColorStop(0.35, `rgba(${theme.primaryGlow[0]}, ${theme.primaryGlow[1]}, ${theme.primaryGlow[2]}, ${0.18 * glowPower})`);
+        grad1.addColorStop(1, `rgba(${theme.primaryGlow[0]}, ${theme.primaryGlow[1]}, ${theme.primaryGlow[2]}, 0)`);
+        ctx.fillStyle = grad1;
+        ctx.beginPath();
+        ctx.arc(lightX, lightY, rad1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Alone sulle stelline del cappello da mago
+        const hatStarX = w * 0.72;
+        const hatStarY = h * 0.27;
+        const rad2 = w * 0.18;
+        const grad2 = ctx.createRadialGradient(hatStarX, hatStarY, 2, hatStarX, hatStarY, rad2);
+        grad2.addColorStop(0, `rgba(${theme.primaryGlow[0]}, ${theme.primaryGlow[1]}, ${theme.primaryGlow[2]}, ${0.28 * glowPower})`);
+        grad2.addColorStop(1, `rgba(${theme.primaryGlow[0]}, ${theme.primaryGlow[1]}, ${theme.primaryGlow[2]}, 0)`);
+        ctx.fillStyle = grad2;
+        ctx.beginPath();
+        ctx.arc(hatStarX, hatStarY, rad2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalCompositeOperation = 'source-over';
+      document.getElementById('sideColoredImg').src = canvas.toDataURL('image/jpeg', 0.95);
+      updateUsedMarkersUI();
+    }
+
+    function updateModeUI() {
+      const btnPaint = document.getElementById('btnModePaint');
+      const btnLight = document.getElementById('btnModeLight');
+      const mat = MASTER_THEMES[selectedMood].materials[selectedMatKey];
+      if (touchMode === 'paint') {
+        btnPaint.className = 'px-2.5 py-1 rounded-lg bg-pink-500 text-white font-bold text-[11px] cursor-pointer';
+        btnLight.className = 'px-2.5 py-1 rounded-lg text-slate-300 font-bold text-[11px] cursor-pointer';
+        document.getElementById('activeMarkerHint').textContent = `Pennello attivo: ${mat ? mat.name : ''} (${mat ? mat.codes : ''})`;
+      } else {
+        btnLight.className = 'px-2.5 py-1 rounded-lg bg-amber-400 text-slate-950 font-bold text-[11px] cursor-pointer';
+        btnPaint.className = 'px-2.5 py-1 rounded-lg text-slate-300 font-bold text-[11px] cursor-pointer';
+        document.getElementById('activeMarkerHint').textContent = `Tocca qualsiasi punto del disegno per posizionare la sorgente di luce magica!`;
+      }
     }
 
     function setupApp() {
-      renderOhuhuPalette(selectedMood);
-      checkKey();
-
-      const keyModal = document.getElementById('keyModal');
-      const inputApiKey = document.getElementById('inputApiKey');
-      const btnOpenKeyModal = document.getElementById('btnOpenKeyModal');
-      const btnSaveKey = document.getElementById('btnSaveKey');
-
-      if (btnOpenKeyModal) {
-        btnOpenKeyModal.onclick = () => {
-          inputApiKey.value = localStorage.getItem('gemini_api_key') || '';
-          keyModal.classList.remove('hidden');
-        };
-      }
-
-      if (btnSaveKey) {
-        btnSaveKey.onclick = () => {
-          const val = inputApiKey.value.trim();
-          if (val) {
-            localStorage.setItem('gemini_api_key', val);
-            checkKey();
-            keyModal.classList.add('hidden');
-            showError(null);
-          }
-        };
-      }
+      renderPaletteSwatches(selectedMood);
 
       document.querySelectorAll('.mood-btn').forEach(btn => {
         btn.onclick = () => {
           document.querySelectorAll('.mood-btn').forEach(b => {
-            b.className = 'mood-btn border-2 border-slate-200 hover:border-pink-300 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer';
+            b.className = 'mood-btn bg-slate-900/80 border border-white/10 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer';
           });
-          btn.className = 'mood-btn border-2 border-pink-400 bg-pink-50 text-pink-700 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer';
+          btn.className = 'mood-btn mode-active border border-white/10 rounded-2xl p-3 text-left transition flex flex-col justify-between cursor-pointer';
           selectedMood = btn.getAttribute('data-mood');
-          renderOhuhuPalette(selectedMood);
+          renderPaletteSwatches(selectedMood);
+          if (cachedScene) renderMasterpiece();
         };
       });
+
+      const sliderGlow = document.getElementById('sliderGlow');
+      sliderGlow.oninput = () => {
+        document.getElementById('glowText').textContent = `${sliderGlow.value}%`;
+        if (cachedScene) renderMasterpiece();
+      };
+
+      const sliderDepth = document.getElementById('sliderDepth');
+      sliderDepth.oninput = () => {
+        document.getElementById('depthText').textContent = `${sliderDepth.value}%`;
+        if (cachedScene) renderMasterpiece();
+      };
+
+      document.getElementById('chkHighlights').onchange = () => {
+        if (cachedScene) renderMasterpiece();
+      };
+
+      document.getElementById('btnModePaint').onclick = () => { touchMode = 'paint'; updateModeUI(); };
+      document.getElementById('btnModeLight').onclick = () => { touchMode = 'light'; updateModeUI(); };
 
       const fileInput = document.getElementById('fileInput');
       const dropZone = document.getElementById('dropZone');
       const btnChangeImage = document.getElementById('btnChangeImage');
 
-      if (dropZone && fileInput) {
-        dropZone.onclick = () => fileInput.click();
-      }
-      
-      if (btnChangeImage && fileInput) {
-        btnChangeImage.onclick = (e) => {
-          e.stopPropagation();
-          fileInput.click();
-        };
-      }
+      dropZone.onclick = () => fileInput.click();
+      btnChangeImage.onclick = (e) => { e.stopPropagation(); fileInput.click(); };
 
-      if (fileInput) {
-        fileInput.onchange = (e) => {
-          if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            currentMimeType = file.type || 'image/jpeg';
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              currentBase64Image = event.target.result;
-              document.getElementById('uploadThumb').src = currentBase64Image;
-              document.getElementById('uploadFileName').textContent = file.name;
-              document.getElementById('uploadPlaceholder').classList.add('hidden');
-              document.getElementById('uploadPreviewBox').classList.remove('hidden');
-              document.getElementById('sideOriginalImg').src = currentBase64Image;
-              document.getElementById('emptyPlaceholder').classList.add('hidden');
-              document.getElementById('singleViewContainer').classList.remove('hidden');
-              document.getElementById('mainResultImg').src = currentBase64Image;
-              document.getElementById('guideSection').classList.add('hidden');
+      fileInput.onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = event.target.result;
+            document.getElementById('uploadThumb').src = dataUrl;
+            document.getElementById('uploadFileName').textContent = file.name;
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            document.getElementById('uploadPreviewBox').classList.remove('hidden');
+            document.getElementById('sideOriginalImg').src = dataUrl;
+            document.getElementById('origOnlyImg').src = dataUrl;
+
+            const loadingBox = document.getElementById('loadingBox');
+            loadingBox.classList.remove('hidden');
+
+            const img = new Image();
+            img.onload = () => {
+              setTimeout(() => {
+                originalImageObj = img;
+                customLightPos = null;
+                document.getElementById('emptyPlaceholder').classList.add('hidden');
+                document.getElementById('singleViewContainer').classList.remove('hidden');
+
+                analyzeSceneTopology(img);
+                assignMasterpieceMaterials();
+                renderMasterpiece();
+                loadingBox.classList.add('hidden');
+              }, 60);
             };
-            reader.readAsDataURL(file);
-          }
-        };
-      }
+            img.src = dataUrl;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
+      // Tocco sulla tela: dipingi con la tripletta Ohuhu o sposta il faro di luce OSL
+      const canvas = document.getElementById('mainCanvas');
+      canvas.addEventListener('click', (e) => {
+        if (!cachedScene) return;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor((e.clientX - rect.left) * scaleX);
+        const y = Math.floor((e.clientY - rect.top) * scaleY);
+
+        if (touchMode === 'light') {
+          customLightPos = { x, y };
+          renderMasterpiece();
+          return;
+        }
+
+        const pos = y * cachedScene.w + x;
+        const regId = cachedScene.labels[pos];
+        if (regId !== undefined && regId >= 0) {
+          regionMatMap.set(regId, selectedMatKey);
+          renderMasterpiece();
+        }
+      });
+
+      document.getElementById('btnDownload').onclick = () => {
+        if (!originalImageObj) return;
+        const link = document.createElement('a');
+        link.download = `masterpiece-ohuhu-${selectedMood}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.96);
+        link.click();
+      };
 
       const btnViewColored = document.getElementById('viewColored');
       const btnViewSide = document.getElementById('viewSideBySide');
       const btnViewOrig = document.getElementById('viewOriginal');
       const singleView = document.getElementById('singleViewContainer');
       const sideView = document.getElementById('sideBySideContainer');
-      const mainImg = document.getElementById('mainResultImg');
+      const origOnlyImg = document.getElementById('origOnlyImg');
 
-      function setActiveView(mode) {
+      function setView(mode) {
         [btnViewColored, btnViewSide, btnViewOrig].forEach(b => {
-          if (b) b.className = 'px-3.5 py-1.5 rounded-lg hover:text-slate-900 cursor-pointer';
+          b.className = 'px-3 py-1.5 rounded-lg hover:text-white cursor-pointer';
         });
-
         if (mode === 'colored') {
-          if (btnViewColored) btnViewColored.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold cursor-pointer';
+          btnViewColored.className = 'px-3 py-1.5 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
           singleView.classList.remove('hidden');
           sideView.classList.add('hidden');
-          mainImg.src = currentColorResult || currentBase64Image;
+          canvas.classList.remove('hidden');
+          origOnlyImg.classList.add('hidden');
         } else if (mode === 'side') {
-          if (btnViewSide) btnViewSide.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold cursor-pointer';
+          btnViewSide.className = 'px-3 py-1.5 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
           singleView.classList.add('hidden');
           sideView.classList.remove('hidden');
         } else if (mode === 'orig') {
-          if (btnViewOrig) btnViewOrig.className = 'px-3.5 py-1.5 rounded-lg bg-white shadow-sm text-purple-700 font-bold cursor-pointer';
+          btnViewOrig.className = 'px-3 py-1.5 rounded-lg bg-slate-700 text-white font-bold cursor-pointer';
           singleView.classList.remove('hidden');
           sideView.classList.add('hidden');
-          mainImg.src = currentBase64Image;
+          canvas.classList.add('hidden');
+          origOnlyImg.classList.remove('hidden');
         }
       }
 
-      if (btnViewColored) btnViewColored.onclick = () => setActiveView('colored');
-      if (btnViewSide) btnViewSide.onclick = () => setActiveView('side');
-      if (btnViewOrig) btnViewOrig.onclick = () => setActiveView('orig');
-
-      const btnGenerate = document.getElementById('btnGenerate');
-      if (btnGenerate) {
-        btnGenerate.onclick = async () => {
-          if (!currentBase64Image) {
-            showError('Carica prima una pagina in bianco e nero.');
-            return;
-          }
-
-          let apiKey = localStorage.getItem('gemini_api_key');
-          if (!apiKey) {
-            keyModal.classList.remove('hidden');
-            showError('Inserisci la chiave API per iniziare.');
-            return;
-          }
-
-          showError(null);
-          const loadingBox = document.getElementById('loadingBox');
-          const loadingStatusText = document.getElementById('loadingStatusText');
-          loadingBox.classList.remove('hidden');
-
-          try {
-            const pureBase64 = currentBase64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-            const activePalette = OHUHU_PALETTES[selectedMood] || OHUHU_PALETTES.pastello;
-            const extra = document.getElementById('customPrompt').value.trim();
-            const extraDetails = extra ? ` Note dell'utente: ${extra}.` : '';
-
-            loadingStatusText.textContent = 'Mappatura delle zone e dei pennarelli Ohuhu...';
-
-            const promptText = `Sei un esperto illustratore di coloring book.
-Analizza accuratamente la composizione di questa line art e individua le zone da colorare nello stile ${selectedMood}.${extraDetails}
-Usa esclusivamente i colori di questa tavolozza Ohuhu Honolulu B:
-${JSON.stringify(activePalette.map(p => ({ code: p.code, name: p.name, hex: p.hex })))}
-
-Per ogni zona principale (es. cappello, cagnolino/personaggio, zucche, calderone, scaffale di legno, sfondo, pavimento/tavolo), definisci:
-- "elemento": nome parte
-- "codice": codice pennarello Ohuhu
-- "colore": nome colore
-- "hex": codice colore hex tra quelli forniti
-- "box": coordinate rettangolari [x1, y1, x2, y2] espresse in percentuale (0-100) che racchiudono quell'area nell'immagine
-- "consiglio": consiglio di sfumatura/stesura con punta brush o chisel
-
-Rispondi ESCLUSIVAMENTE con un JSON valido strutturato così:
-{
-  "zone": [
-    { "elemento": "Cappello da mago", "codice": "V280", "colore": "Night Violet", "hex": "#634473", "box": [65, 35, 95, 55], "consiglio": "Inizia dalle ombre della falda" },
-    { "elemento": "Cucciolo", "codice": "E020", "colore": "Milky Cream", "hex": "#F7E7D0", "box": [68, 48, 88, 72], "consiglio": "Campitura morbida" },
-    { "elemento": "Zucche", "codice": "YR4", "colore": "Apricot Orange", "hex": "#FFB380", "box": [50, 68, 68, 88], "consiglio": "Sfumare con YR5" },
-    { "elemento": "Calderone", "codice": "E310", "colore": "Warm Oak", "hex": "#A47551", "box": [63, 65, 82, 85], "consiglio": "Ombre scure sulla base" },
-    { "elemento": "Scaffale e libri", "codice": "E310", "colore": "Warm Oak", "hex": "#A47551", "box": [52, 45, 72, 70], "consiglio": "Effetto venatura legno" },
-    { "elemento": "Pozione e magia", "codice": "G5", "colore": "Poison Green", "hex": "#77C924", "box": [53, 75, 63, 85], "consiglio": "Tocco vivace e brillante" },
-    { "elemento": "Fondo / Parete", "codice": "E020", "colore": "Milky Cream", "hex": "#F7E7D0", "box": [50, 30, 95, 50], "consiglio": "Tono neutro chiaro" }
-  ]
-}`;
-
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{
-                  parts: [
-                    { text: promptText },
-                    {
-                      inline_data: {
-                        mime_type: currentMimeType,
-                        data: pureBase64
-                      }
-                    }
-                  ]
-                }]
-              })
-            });
-
-            if (!response.ok) {
-              const err = await response.json().catch(() => ({}));
-              throw new Error(err?.error?.message || `Errore HTTP ${response.status}`);
-            }
-
-            const data = await response.json();
-            const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-
-            let zones = [];
-            if (jsonMatch) {
-              const parsed = JSON.parse(jsonMatch[0]);
-              zones = parsed.zone || [];
-            }
-
-            // Fallback intelligente se il modello non invia tutte le zone
-            if (zones.length === 0) {
-              zones = [
-                { elemento: "Dettagli alti", codice: activePalette[1].code, colore: activePalette[1].name, hex: activePalette[1].hex, box: [60, 35, 95, 55], consiglio: "Punta brush" },
-                { elemento: "Personaggio", codice: activePalette[0].code, colore: activePalette[0].name, hex: activePalette[0].hex, box: [65, 50, 85, 75], consiglio: "Sfumatura morbida" },
-                { elemento: "Elementi centrali", codice: activePalette[2].code, colore: activePalette[2].name, hex: activePalette[2].hex, box: [50, 65, 75, 88], consiglio: "Campitura piena" }
-              ];
-            }
-
-            loadingStatusText.textContent = 'Colorazione delle zone sul disegno originale...';
-            currentColorResult = await renderMultiZoneColorization(currentBase64Image, zones);
-            document.getElementById('sideColoredImg').src = currentColorResult;
-            setActiveView('colored');
-
-            // Mappa pennarelli a schermo
-            const guideSection = document.getElementById('guideSection');
-            const guideItems = document.getElementById('guideItems');
-            guideItems.innerHTML = '';
-
-            zones.forEach(item => {
-              const row = document.createElement('div');
-              row.className = 'p-2.5 rounded-xl bg-purple-50/60 border border-purple-100 flex items-start gap-2.5';
-              row.innerHTML = `
-                <span class="w-4 h-4 rounded-full mt-1 flex-shrink-0 border border-black/20" style="background-color: ${item.hex}"></span>
-                <span class="px-2 py-0.5 rounded-md bg-purple-600 text-white font-bold text-[11px] mt-0.5 flex-shrink-0">${item.codice}</span>
-                <div>
-                  <span class="font-bold text-slate-800">${item.elemento}:</span>
-                  <span class="text-purple-900">${item.colore}</span>
-                  <p class="text-[11px] text-slate-500 mt-0.5">${item.consiglio}</p>
-                </div>
-              `;
-              guideItems.appendChild(row);
-            });
-            guideSection.classList.remove('hidden');
-
-            renderOhuhuPalette(selectedMood);
-
-          } catch (err) {
-            console.error(err);
-            showError(`Errore: ${err.message}`);
-          } finally {
-            loadingBox.classList.add('hidden');
-          }
-        };
-      }
+      btnViewColored.onclick = () => setView('colored');
+      btnViewSide.onclick = () => setView('side');
+      btnViewOrig.onclick = () => setView('orig');
     }
 
     if (document.readyState === 'loading') {
